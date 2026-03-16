@@ -33,6 +33,9 @@ final class ArtworkDetailsCardView: UIView {
         static let favouriteButtonRight: CGFloat = 20
         static let favouriteButtonBottom: CGFloat = 22
         
+        static let expandIconSize: CGFloat = 24
+        static let expandIconIndent: CGFloat = 10
+
         // Fonts
         static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 44)
             ?? .systemFont(ofSize: 44, weight: .regular)
@@ -44,10 +47,12 @@ final class ArtworkDetailsCardView: UIView {
         static let borderColor: UIColor = UIColor(named: "NeonGreen") ?? .systemGreen
         static let textColor: UIColor = .black
         static let tintColor: UIColor = .black
-        
+        static let iconTintColor: UIColor = .white
+
         // Images
         static let heartImage: UIImage = UIImage(named: "heartIcon") ?? UIImage()
         static let filledHeartImage: UIImage = UIImage(named: "filledHeartIcon") ?? UIImage()
+        static let expandImage: UIImage = UIImage(named: "expandIcon") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -61,9 +66,13 @@ final class ArtworkDetailsCardView: UIView {
     // Views
     private let artworkImageView: UIImageView = UIImageView()
     
+    // Images
+    private let expandIconView: UIImageView = UIImageView()
+    
     // Closures
     var onFavouriteTapped: (() -> ())?
-    
+    var onImageTapped: (() -> ())?
+
     // Other
     private var artwork: Artwork?
     private var isFavourite: Bool = false
@@ -90,6 +99,7 @@ final class ArtworkDetailsCardView: UIView {
         configureFavouriteButton()
         configureTitleLabel()
         configureArtistLabel()
+        configureExpandIconView()
     }
     
     private func configureArtworkImageView() {
@@ -98,7 +108,14 @@ final class ArtworkDetailsCardView: UIView {
         artworkImageView.contentMode = .scaleAspectFill
         artworkImageView.clipsToBounds = true
         artworkImageView.layer.cornerRadius = Const.imageCornerRadius
+        artworkImageView.isUserInteractionEnabled = true
         artworkImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(
+            target: self,
+            action: #selector(artworkImageTapped)
+        )
+        artworkImageView.addGestureRecognizer(tapGesture)
         
         NSLayoutConstraint.activate([
             artworkImageView.topAnchor.constraint(equalTo: topAnchor, constant: Const.imageTop),
@@ -157,6 +174,23 @@ final class ArtworkDetailsCardView: UIView {
         ])
     }
     
+    private func configureExpandIconView() {
+        addSubview(expandIconView)
+        
+        expandIconView.image = Const.expandImage
+        expandIconView.tintColor = Const.iconTintColor
+        
+        expandIconView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            expandIconView.heightAnchor.constraint(equalToConstant: Const.expandIconSize),
+            expandIconView.widthAnchor.constraint(equalToConstant: Const.expandIconSize),
+            expandIconView.trailingAnchor.constraint(equalTo: artworkImageView.trailingAnchor, constant: -Const.expandIconIndent),
+            expandIconView.bottomAnchor.constraint(equalTo: artworkImageView.bottomAnchor, constant: -Const.expandIconIndent)
+        ])
+    }
+
+    
     // MARK: - Configuration
     func configure(
         with artwork: Artwork,
@@ -176,6 +210,11 @@ final class ArtworkDetailsCardView: UIView {
     @objc
     private func favouriteButtonTapped() {
         onFavouriteTapped?()
+    }
+    
+    @objc
+    private func artworkImageTapped() {
+        onImageTapped?()
     }
     
     // MARK: - Favourites logic

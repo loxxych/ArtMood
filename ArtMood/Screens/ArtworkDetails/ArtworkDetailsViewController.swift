@@ -131,13 +131,18 @@ final class ArtworkDetailsViewController: UIViewController {
     private func configureActions() {
         detailsCardView.onFavouriteTapped = { [weak self] in
             guard let self else { return }
-
+            
             self.favouritesStore.toggleFavourite(id: self.artwork.id)
-
+            
             let isFavourite: Bool = self.favouritesStore.isFavourite(id: self.artwork.id)
-
             self.detailsCardView.setFavourite(isFavourite)
+            
             self.onFavouriteTapped?(self.artwork)
+        }
+        
+        detailsCardView.onImageTapped = { [weak self] in
+            guard let self else { return }
+            self.openFullScreenArtwork()
         }
     }
     
@@ -145,5 +150,12 @@ final class ArtworkDetailsViewController: UIViewController {
     @objc
     private func backButtonTapped() {
         onBackTapped?()
+    }
+    
+    // MARK: - Display logic
+    private func openFullScreenArtwork() {
+        let viewController = FullScreenArtworkViewController(artwork: artwork)
+        viewController.modalPresentationStyle = .fullScreen
+        present(viewController, animated: true)
     }
 }
