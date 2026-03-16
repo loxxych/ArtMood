@@ -15,12 +15,12 @@ final class FavouritesViewController: UIViewController {
         
         static let backButtonSize: CGFloat = 30
         static let backButtonLeft: CGFloat = 10
-        static let backButtonBottom: CGFloat = 6
+        static let backButtonBottom: CGFloat = 0
         
-        static let logoWidth: CGFloat = 106
+        static let logoWidth: CGFloat = 120
         static let logoHeight: CGFloat = 22
-        static let logoLeft: CGFloat = 10
-        static let logoTop: CGFloat = 10
+        static let logoLeft: CGFloat = 25
+        static let logoTop: CGFloat = 5
         
         static let titleTop: CGFloat = 18
         static let titleLeft: CGFloat = 24

@@ -11,7 +11,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     // MARK: - Constants
     private enum Const {
         // Strings
-        static let identifier: String = "GalleryCollectionViewCell"
+        static let reuseIdentifier: String = "GalleryCollectionViewCell"
         static let fatalError: String = "init(coder:) has not been implemented"
         
         // Layout
@@ -43,8 +43,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         static let tintColor: UIColor = .black
         
         // Images
-        static let arrowAssetName: String = "arrowRight"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowRight") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -146,5 +145,5 @@ class GalleryCollectionViewCell: UICollectionViewCell {
 
 // MARK: - UICollectionViewCell
 extension GalleryCollectionViewCell {
-    static let reuseIdentifier: String = Const.identifier
+    static let reuseIdentifier: String = Const.reuseIdentifier
 }

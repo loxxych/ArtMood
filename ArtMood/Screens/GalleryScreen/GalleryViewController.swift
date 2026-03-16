@@ -18,51 +18,41 @@ final class GalleryViewController: UIViewController {
         
         static let backButtonSize: CGFloat = 30
         static let backButtonLeft: CGFloat = 10
-        static let backButtonBottom: CGFloat = 6
+        static let backButtonBottom: CGFloat = 0
         
-        static let logoWidth: CGFloat = 106
+        static let logoWidth: CGFloat = 120
         static let logoHeight: CGFloat = 22
-        static let logoLeft: CGFloat = 10
-        static let logoTop: CGFloat = 10
+        static let logoLeft: CGFloat = 25
+        static let logoTop: CGFloat = 5
         
         static let favouriteButtonSize: CGFloat = 28
         static let favouriteButtonRight: CGFloat = 16
-        static let favouriteButtonTop: CGFloat = 10
+        static let favouriteButtonTop: CGFloat = 15
         
-        static let titleTop: CGFloat = 18
-        static let titleLeft: CGFloat = 24
-        static let titleRight: CGFloat = 24
-        
-        static let collectionTop: CGFloat = 24
+        static let collectionTop: CGFloat = 6
         static let collectionLeft: CGFloat = 16
         static let collectionRight: CGFloat = 16
         static let collectionBottom: CGFloat = 0
         
         static let itemSpacing: CGFloat = 14
-        static let lineSpacing: CGFloat = 14
-        
-        // Fonts
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 42)
-            ?? .systemFont(ofSize: 42, weight: .regular)
-        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 42)
-            ?? .boldSystemFont(ofSize: 42)
+        static let lineSpacing: CGFloat = 16
         
         // Colors
         static let bgColor: UIColor = .white
         static let tintColor: UIColor = .black
         
         // Images
-        static let arrowAssetName: String = "arrowLeft"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
-        
-        static let heartAssetName: String = "heartIcon"
-        static let heartImage: UIImage = UIImage(named: heartAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
+        static let heartImage: UIImage = UIImage(named: "heartIcon") ?? UIImage()
+    }
+    
+    // MARK: - Section
+    private enum Section: Int, CaseIterable {
+        case intro
+        case artworks
     }
     
     // MARK: - Fields
-    // Labels
-    private let titleLabel: UILabel = UILabel()
-    
     // Buttons
     private let backButton: UIButton = UIButton(type: .system)
     private let favouritesButton: UIButton = UIButton(type: .system)
@@ -95,6 +85,7 @@ final class GalleryViewController: UIViewController {
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = Const.lineSpacing
         layout.minimumInteritemSpacing = Const.itemSpacing
+        layout.sectionInset = .zero
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
@@ -121,7 +112,6 @@ final class GalleryViewController: UIViewController {
         view.backgroundColor = Const.bgColor
         
         configureHeader()
-        configureTitleLabel()
         configureCollectionViewLayout()
     }
     
@@ -162,7 +152,6 @@ final class GalleryViewController: UIViewController {
         backButton.tintColor = Const.tintColor
         backButton.setImage(Const.arrowImage.withRenderingMode(.alwaysTemplate), for: .normal)
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        
         backButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -179,7 +168,6 @@ final class GalleryViewController: UIViewController {
         favouritesButton.tintColor = Const.tintColor
         favouritesButton.setImage(Const.heartImage.withRenderingMode(.alwaysTemplate), for: .normal)
         favouritesButton.addTarget(self, action: #selector(favouritesButtonTapped), for: .touchUpInside)
-        
         favouritesButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -190,20 +178,6 @@ final class GalleryViewController: UIViewController {
         ])
     }
     
-    private func configureTitleLabel() {
-        view.addSubview(titleLabel)
-        
-        titleLabel.attributedText = makeTitleText()
-        titleLabel.numberOfLines = 2
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.titleTop),
-            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.titleLeft),
-            titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.titleRight)
-        ])
-    }
-    
     private func configureCollectionViewLayout() {
         view.addSubview(collectionView)
         
@@ -211,7 +185,7 @@ final class GalleryViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Const.collectionTop),
+            collectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.collectionTop),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.collectionLeft),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.collectionRight),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -Const.collectionBottom)
@@ -220,6 +194,11 @@ final class GalleryViewController: UIViewController {
     
     private func configureCollectionView() {
         collectionView.register(
+            GalleryIntroCell.self,
+            forCellWithReuseIdentifier: GalleryIntroCell.reuseIdentifier
+        )
+        
+        collectionView.register(
             GalleryCollectionViewCell.self,
             forCellWithReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier
         )
@@ -227,42 +206,11 @@ final class GalleryViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.contentInset.bottom = 24
     }
     
-    private func makeTitleText() -> NSAttributedString {
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            string: "A gallery of\n",
-            attributes: [
-                .font: Const.titleFont,
-                .foregroundColor: UIColor.black
-            ]
-        )
-        
-        attributedText.append(
-            NSAttributedString(
-                string: "your",
-                attributes: [
-                    .font: Const.titleBoldFont,
-                    .foregroundColor: UIColor.black
-                ]
-            )
-        )
-        
-        attributedText.append(
-            NSAttributedString(
-                string: " feelings",
-                attributes: [
-                    .font: Const.titleFont,
-                    .foregroundColor: UIColor.black
-                ]
-            )
-        )
-        
-        return attributedText
-    }
-    
-    private func imageHeight(for indexPath: IndexPath) -> CGFloat {
-        switch indexPath.item % 4 {
+    private func imageHeight(for artworkIndex: Int) -> CGFloat {
+        switch artworkIndex % 4 {
         case 0:
             return 165
         case 1:
@@ -288,29 +236,57 @@ final class GalleryViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource
 extension GalleryViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        Section.allCases.count
+    }
+    
     func collectionView(
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        artworks.count
+        guard let section = Section(rawValue: section) else { return 0 }
+        
+        switch section {
+        case .intro:
+            return 1
+        case .artworks:
+            return artworks.count
+        }
     }
     
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let cell: GalleryCollectionViewCell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        ) as? GalleryCollectionViewCell else {
+        guard let section = Section(rawValue: indexPath.section) else {
             return UICollectionViewCell()
         }
         
-        let artwork: Artwork = artworks[indexPath.item]
-        cell.configure(with: artwork)
-        cell.setImageHeight(imageHeight(for: indexPath))
-        
-        return cell
+        switch section {
+        case .intro:
+            guard let cell: GalleryIntroCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: GalleryIntroCell.reuseIdentifier,
+                for: indexPath
+            ) as? GalleryIntroCell else {
+                return UICollectionViewCell()
+            }
+            
+            return cell
+            
+        case .artworks:
+            guard let cell: GalleryCollectionViewCell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            ) as? GalleryCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            
+            let artwork: Artwork = artworks[indexPath.item]
+            cell.configure(with: artwork)
+            cell.setImageHeight(imageHeight(for: indexPath.item))
+            
+            return cell
+        }
     }
 }
 
@@ -321,20 +297,63 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let totalSpacing: CGFloat = Const.itemSpacing
-        let availableWidth: CGFloat = collectionView.bounds.width - totalSpacing
-        let itemWidth: CGFloat = availableWidth / 2
+        guard let section = Section(rawValue: indexPath.section) else {
+            return .zero
+        }
         
-        let currentImageHeight: CGFloat = imageHeight(for: indexPath)
-        let totalHeight: CGFloat = currentImageHeight + 10 + 10 + 40
+        switch section {
+        case .intro:
+            return CGSize(width: collectionView.bounds.width, height: 150)
+            
+        case .artworks:
+            let totalSpacing: CGFloat = Const.itemSpacing
+            let availableWidth: CGFloat = collectionView.bounds.width - totalSpacing
+            let itemWidth: CGFloat = availableWidth / 2
+            
+            let currentImageHeight: CGFloat = imageHeight(for: indexPath.item)
+            let totalHeight: CGFloat = currentImageHeight + 10 + 10 + 40
+            
+            return CGSize(width: itemWidth, height: totalHeight)
+        }
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        guard let section = Section(rawValue: section) else { return Const.lineSpacing }
         
-        return CGSize(width: itemWidth, height: totalHeight)
+        switch section {
+        case .intro:
+            return 8
+        case .artworks:
+            return Const.lineSpacing
+        }
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        guard let section = Section(rawValue: section) else { return Const.itemSpacing }
+        
+        switch section {
+        case .intro:
+            return 0
+        case .artworks:
+            return Const.itemSpacing
+        }
     }
     
     func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
+        guard let section = Section(rawValue: indexPath.section) else { return }
+        guard section == .artworks else { return }
+        
         let artwork: Artwork = artworks[indexPath.item]
         onArtworkTapped?(artwork)
     }
