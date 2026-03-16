@@ -32,20 +32,45 @@ final class PalettePickViewController: UIViewController {
         static let titleRight: CGFloat = 24
         
         static let optionsTop: CGFloat = 42
-        static let optionsHorizontalInset: CGFloat = 20
+        static let optionsHorizontalInset: CGFloat = 0
         static let optionHeight: CGFloat = 52
         static let optionSpacing: CGFloat = 28
         
-        static let firstImageSize: CGFloat = 112
-        static let secondImageWidth: CGFloat = 120
-        static let secondImageHeight: CGFloat = 112
-        static let thirdImageSize: CGFloat = 112
+        static let coolImageWidth: CGFloat = 120
+        static let coolImageHeight: CGFloat = 117
+        
+        static let warmImageWidth: CGFloat = 120
+        static let warmImageHeight: CGFloat = 112
+        
+        static let contrastImageSize: CGFloat = 112
         
         static let buttonWidth: CGFloat = 190
         static let nextButtonBottom: CGFloat = 18
-        static let nextButtonTopSpacing: CGFloat = 32
+        static let nextButtonTopSpacing: CGFloat = 40
         
-        static let optionCornerRadius: CGFloat = 26
+        static let dotsSize: CGFloat = 120
+        static let dotsTop: CGFloat = 0
+        static let dotsRight: CGFloat = 44
+        
+        static let starSize: CGFloat = 62
+        static let starTop: CGFloat = 26
+        static let starRight: CGFloat = 94
+        
+        static let leftSpiralSize: CGFloat = 120
+        static let leftSpiralLeft: CGFloat = -50
+        static let leftSpiralBottom: CGFloat = 180
+        
+        static let bottomSpiralHeight: CGFloat = 240
+        static let bottomSpiralWidth: CGFloat = 120
+        static let bottomSpiralBottom: CGFloat = 65
+        
+        static let blackStarSize: CGFloat = 48
+        static let blackStarBottom: CGFloat = 125
+        static let blackStarRight: CGFloat = 56
+        
+        static let buttonsIndent: CGFloat = 25
+        
+        static let optionCornerRadius: CGFloat = 78
         static let optionBorderWidth: CGFloat = 1
         
         // Fonts
@@ -66,11 +91,15 @@ final class PalettePickViewController: UIViewController {
         static let borderColor: UIColor = .black
         
         // Images
-        static let arrowAssetName: String = "arrowLeft"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
         static let coolImage: UIImage = UIImage(named: "paletteCool") ?? UIImage()
         static let warmImage: UIImage = UIImage(named: "paletteWarm") ?? UIImage()
         static let contrastImage: UIImage = UIImage(named: "paletteContrast") ?? UIImage()
+        static let dotsImage: UIImage = UIImage(named: "dotsCircle") ?? UIImage()
+        static let greenStarImage: UIImage = UIImage(named: "greenStar") ?? UIImage()
+        static let leftSpiralImage: UIImage = UIImage(named: "leftSpiral") ?? UIImage()
+        static let bottomSpiralImage: UIImage = UIImage(named: "bottomSpiral") ?? UIImage()
+        static let blackStarImage: UIImage = UIImage(named: "blackStar") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -89,7 +118,12 @@ final class PalettePickViewController: UIViewController {
     private let coolImageView: UIImageView = UIImageView()
     private let warmImageView: UIImageView = UIImageView()
     private let contrastImageView: UIImageView = UIImageView()
-    
+    private let dotsImageView: UIImageView = UIImageView()
+    private let greenStarImageView: UIImageView = UIImageView()
+    private let leftSpiralImageView: UIImageView = UIImageView()
+    private let bottomSpiralImageView: UIImageView = UIImageView()
+    private let blackStarImageView: UIImageView = UIImageView()
+
     // Views
     private let optionsContainerView: UIView = UIView()
     private let firstRowView: UIView = UIView()
@@ -101,7 +135,8 @@ final class PalettePickViewController: UIViewController {
     var onBackTapped: (() -> ())?
     
     // Other
-    private var palette: Palette?
+    private var palette: Palette? = .cool
+    private var hasAnimated: Bool = false
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -117,12 +152,20 @@ final class PalettePickViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         updateSelectionUI()
+        prepareAnimationState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard !hasAnimated else { return }
+        hasAnimated = true
+        
+        runAppearAnimations()
     }
     
     // MARK: - UI configuration
     private func configureUI() {
-        view.backgroundColor = Const.bgColor
-        
         configureBackButton()
         configureCounterLabel()
         configureTitleLabel()
@@ -130,7 +173,57 @@ final class PalettePickViewController: UIViewController {
         configureFirstRow()
         configureSecondRow()
         configureThirdRow()
+        configureBackground()
         configureNextButton()
+    }
+    
+    private func configureBackground() {
+        view.backgroundColor = Const.bgColor
+
+        configurePaletteImageView(imageView: dotsImageView, image: Const.dotsImage)
+        configurePaletteImageView(imageView: greenStarImageView, image: Const.greenStarImage)
+        configurePaletteImageView(imageView: leftSpiralImageView, image: Const.leftSpiralImage)
+        configurePaletteImageView(imageView: bottomSpiralImageView, image: Const.bottomSpiralImage)
+        configurePaletteImageView(imageView: blackStarImageView, image: Const.blackStarImage)
+        
+        view.addSubview(dotsImageView)
+        view.addSubview(greenStarImageView)
+        view.addSubview(leftSpiralImageView)
+        view.addSubview(bottomSpiralImageView)
+        view.addSubview(blackStarImageView)
+
+        NSLayoutConstraint.activate([
+            dotsImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.dotsTop),
+            dotsImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Const.dotsRight),
+            dotsImageView.heightAnchor.constraint(equalToConstant: Const.dotsSize),
+            dotsImageView.widthAnchor.constraint(equalToConstant: Const.dotsSize),
+            
+            greenStarImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Const.starTop),
+            greenStarImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.starRight),
+            greenStarImageView.widthAnchor.constraint(equalToConstant: Const.starSize),
+            greenStarImageView.heightAnchor.constraint(equalToConstant: Const.starSize),
+            
+            leftSpiralImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.leftSpiralLeft),
+            leftSpiralImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.leftSpiralBottom),
+            leftSpiralImageView.widthAnchor.constraint(equalToConstant: Const.leftSpiralSize),
+            leftSpiralImageView.heightAnchor.constraint(equalToConstant: Const.leftSpiralSize),
+            
+            bottomSpiralImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            bottomSpiralImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Const.bottomSpiralBottom),
+            bottomSpiralImageView.widthAnchor.constraint(equalToConstant: Const.bottomSpiralWidth),
+            bottomSpiralImageView.heightAnchor.constraint(equalToConstant: Const.bottomSpiralHeight),
+            
+            blackStarImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.blackStarRight),
+            blackStarImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.blackStarBottom),
+            blackStarImageView.widthAnchor.constraint(equalToConstant: Const.blackStarSize),
+            blackStarImageView.heightAnchor.constraint(equalToConstant: Const.blackStarSize)
+        ])
+        
+        view.sendSubviewToBack(dotsImageView)
+        view.sendSubviewToBack(greenStarImageView)
+        view.sendSubviewToBack(leftSpiralImageView)
+        view.sendSubviewToBack(bottomSpiralImageView)
+        view.sendSubviewToBack(blackStarImageView)
     }
     
     private func configureBackButton() {
@@ -200,7 +293,7 @@ final class PalettePickViewController: UIViewController {
             firstRowView.topAnchor.constraint(equalTo: optionsContainerView.topAnchor),
             firstRowView.leadingAnchor.constraint(equalTo: optionsContainerView.leadingAnchor),
             firstRowView.trailingAnchor.constraint(equalTo: optionsContainerView.trailingAnchor),
-            firstRowView.heightAnchor.constraint(equalToConstant: Const.firstImageSize)
+            firstRowView.heightAnchor.constraint(equalToConstant: Const.coolImageHeight)
         ])
         
         configurePaletteButton(
@@ -210,24 +303,21 @@ final class PalettePickViewController: UIViewController {
             action: #selector(coolButtonTapped)
         )
         
-        configurePaletteImageView(
-            imageView: coolImageView,
-            image: Const.coolImage
-        )
+        configurePaletteImageView(imageView: coolImageView, image: Const.coolImage)
         
         firstRowView.addSubview(coolButton)
         firstRowView.addSubview(coolImageView)
         
         NSLayoutConstraint.activate([
-            coolButton.leadingAnchor.constraint(equalTo: firstRowView.leadingAnchor),
+            coolButton.leadingAnchor.constraint(equalTo: firstRowView.leadingAnchor, constant: Const.buttonsIndent),
             coolButton.centerYAnchor.constraint(equalTo: firstRowView.centerYAnchor),
             coolButton.widthAnchor.constraint(equalToConstant: Const.buttonWidth),
             coolButton.heightAnchor.constraint(equalToConstant: Const.optionHeight),
             
             coolImageView.trailingAnchor.constraint(equalTo: firstRowView.trailingAnchor),
             coolImageView.centerYAnchor.constraint(equalTo: firstRowView.centerYAnchor),
-            coolImageView.widthAnchor.constraint(equalToConstant: Const.firstImageSize),
-            coolImageView.heightAnchor.constraint(equalToConstant: Const.firstImageSize)
+            coolImageView.widthAnchor.constraint(equalToConstant: Const.coolImageWidth),
+            coolImageView.heightAnchor.constraint(equalToConstant: Const.coolImageHeight)
         ])
     }
     
@@ -240,7 +330,7 @@ final class PalettePickViewController: UIViewController {
             secondRowView.topAnchor.constraint(equalTo: firstRowView.bottomAnchor, constant: Const.optionSpacing),
             secondRowView.leadingAnchor.constraint(equalTo: optionsContainerView.leadingAnchor),
             secondRowView.trailingAnchor.constraint(equalTo: optionsContainerView.trailingAnchor),
-            secondRowView.heightAnchor.constraint(equalToConstant: Const.secondImageHeight)
+            secondRowView.heightAnchor.constraint(equalToConstant: Const.warmImageHeight)
         ])
         
         configurePaletteButton(
@@ -250,10 +340,7 @@ final class PalettePickViewController: UIViewController {
             action: #selector(warmButtonTapped)
         )
         
-        configurePaletteImageView(
-            imageView: warmImageView,
-            image: Const.warmImage
-        )
+        configurePaletteImageView(imageView: warmImageView, image: Const.warmImage)
         
         secondRowView.addSubview(warmImageView)
         secondRowView.addSubview(warmButton)
@@ -261,10 +348,10 @@ final class PalettePickViewController: UIViewController {
         NSLayoutConstraint.activate([
             warmImageView.leadingAnchor.constraint(equalTo: secondRowView.leadingAnchor),
             warmImageView.centerYAnchor.constraint(equalTo: secondRowView.centerYAnchor),
-            warmImageView.widthAnchor.constraint(equalToConstant: Const.secondImageWidth),
-            warmImageView.heightAnchor.constraint(equalToConstant: Const.secondImageHeight),
+            warmImageView.widthAnchor.constraint(equalToConstant: Const.warmImageWidth),
+            warmImageView.heightAnchor.constraint(equalToConstant: Const.warmImageHeight),
             
-            warmButton.trailingAnchor.constraint(equalTo: secondRowView.trailingAnchor),
+            warmButton.trailingAnchor.constraint(equalTo: secondRowView.trailingAnchor, constant: -Const.buttonsIndent),
             warmButton.centerYAnchor.constraint(equalTo: secondRowView.centerYAnchor),
             warmButton.widthAnchor.constraint(equalToConstant: Const.buttonWidth),
             warmButton.heightAnchor.constraint(equalToConstant: Const.optionHeight)
@@ -280,7 +367,7 @@ final class PalettePickViewController: UIViewController {
             thirdRowView.topAnchor.constraint(equalTo: secondRowView.bottomAnchor, constant: Const.optionSpacing),
             thirdRowView.leadingAnchor.constraint(equalTo: optionsContainerView.leadingAnchor),
             thirdRowView.trailingAnchor.constraint(equalTo: optionsContainerView.trailingAnchor),
-            thirdRowView.heightAnchor.constraint(equalToConstant: Const.thirdImageSize),
+            thirdRowView.heightAnchor.constraint(equalToConstant: Const.contrastImageSize),
             thirdRowView.bottomAnchor.constraint(equalTo: optionsContainerView.bottomAnchor)
         ])
         
@@ -291,24 +378,21 @@ final class PalettePickViewController: UIViewController {
             action: #selector(contrastButtonTapped)
         )
         
-        configurePaletteImageView(
-            imageView: contrastImageView,
-            image: Const.contrastImage
-        )
+        configurePaletteImageView(imageView: contrastImageView, image: Const.contrastImage)
         
         thirdRowView.addSubview(contrastButton)
         thirdRowView.addSubview(contrastImageView)
         
         NSLayoutConstraint.activate([
-            contrastButton.leadingAnchor.constraint(equalTo: thirdRowView.leadingAnchor),
+            contrastButton.leadingAnchor.constraint(equalTo: thirdRowView.leadingAnchor, constant: Const.buttonsIndent),
             contrastButton.centerYAnchor.constraint(equalTo: thirdRowView.centerYAnchor),
             contrastButton.widthAnchor.constraint(equalToConstant: Const.buttonWidth),
             contrastButton.heightAnchor.constraint(equalToConstant: Const.optionHeight),
             
             contrastImageView.trailingAnchor.constraint(equalTo: thirdRowView.trailingAnchor),
             contrastImageView.centerYAnchor.constraint(equalTo: thirdRowView.centerYAnchor),
-            contrastImageView.widthAnchor.constraint(equalToConstant: Const.thirdImageSize),
-            contrastImageView.heightAnchor.constraint(equalToConstant: Const.thirdImageSize)
+            contrastImageView.widthAnchor.constraint(equalToConstant: Const.contrastImageSize),
+            contrastImageView.heightAnchor.constraint(equalToConstant: Const.contrastImageSize)
         ])
     }
     
@@ -342,7 +426,6 @@ final class PalettePickViewController: UIViewController {
         imageView.image = image
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = imageView === warmImageView ? 28 : imageView === contrastImageView ? Const.thirdImageSize / 2 : Const.firstImageSize / 2
         imageView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -359,6 +442,7 @@ final class PalettePickViewController: UIViewController {
         ])
     }
     
+    // MARK: - UI updating
     private func updateSelectionUI() {
         updatePaletteButton(button: coolButton, isSelected: palette == .cool)
         updatePaletteButton(button: warmButton, isSelected: palette == .warm)
@@ -381,6 +465,7 @@ final class PalettePickViewController: UIViewController {
         button.backgroundColor = isSelected ? Const.selectedButtonBgColor : Const.normalButtonBgColor
     }
     
+    // MARK: - Selection logic
     private func selectCool() {
         palette = .cool
         updateSelectionUI()
@@ -394,6 +479,68 @@ final class PalettePickViewController: UIViewController {
     private func selectContrast() {
         palette = .contrast
         updateSelectionUI()
+    }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        backButton.alpha = 0
+        counterLabel.alpha = 0
+        titleLabel.alpha = 0
+        
+        dotsImageView.alpha = 0
+        leftSpiralImageView.alpha = 0
+        bottomSpiralImageView.alpha = 0
+        blackStarImageView.alpha = 0
+        
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        
+        firstRowView.alpha = 0
+        firstRowView.transform = CGAffineTransform(translationX: 60, y: 0)
+        
+        secondRowView.alpha = 0
+        secondRowView.transform = CGAffineTransform(translationX: -60, y: 0)
+        
+        thirdRowView.alpha = 0
+        thirdRowView.transform = CGAffineTransform(translationX: 60, y: 0)
+        
+        nextButton.alpha = 0
+        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+    }
+    
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.35) {
+            self.backButton.alpha = 1
+            self.counterLabel.alpha = 1
+            self.dotsImageView.alpha = 1
+            self.leftSpiralImageView.alpha = 1
+            self.bottomSpiralImageView.alpha = 1
+            self.blackStarImageView.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.12, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = 1
+            self.titleLabel.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.3, options: [.curveEaseOut]) {
+            self.firstRowView.alpha = 1
+            self.firstRowView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.42, options: [.curveEaseOut]) {
+            self.secondRowView.alpha = 1
+            self.secondRowView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.54, options: [.curveEaseOut]) {
+            self.thirdRowView.alpha = 1
+            self.thirdRowView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.4, delay: 0.72, options: [.curveEaseOut]) {
+            self.nextButton.alpha = 1
+            self.nextButton.transform = .identity
+        }
     }
     
     // MARK: - Actions
