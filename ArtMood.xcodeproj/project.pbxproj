@@ -21,16 +21,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		59575C742F6782AC00752ABD /* Services */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Services;
-			sourceTree = "<group>";
-		};
-		59575C792F67845900752ABD /* Persistence */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Persistence;
-			sourceTree = "<group>";
-		};
 		59B15B602F66C256002D0485 /* ArtMood */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -55,8 +45,6 @@
 		59B15B552F66C256002D0485 = {
 			isa = PBXGroup;
 			children = (
-				59575C792F67845900752ABD /* Persistence */,
-				59575C742F6782AC00752ABD /* Services */,
 				59B15B602F66C256002D0485 /* ArtMood */,
 				59B15B5F2F66C256002D0485 /* Products */,
 			);
@@ -86,8 +74,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				59575C742F6782AC00752ABD /* Services */,
-				59575C792F67845900752ABD /* Persistence */,
 				59B15B602F66C256002D0485 /* ArtMood */,
 			);
 			name = ArtMood;

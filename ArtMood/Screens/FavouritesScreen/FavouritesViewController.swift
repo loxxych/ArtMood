@@ -90,13 +90,10 @@ final class FavouritesViewController: UIViewController {
     // MARK: - Data
     private func configureData() {
         let favouriteIDs: [String] = favouritesStore.getFavouriteIDs()
-        print("Favourite IDs:", favouriteIDs)
 
         favouriteArtworks = ArtworkMockData.artworks.filter { artwork in
             favouriteIDs.contains(artwork.id)
         }
-
-        print("Favourite artworks count:", favouriteArtworks.count)
     }
     
     // MARK: - UI

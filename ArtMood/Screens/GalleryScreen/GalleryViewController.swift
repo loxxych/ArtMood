@@ -16,6 +16,10 @@ final class GalleryViewController: UIViewController {
         // Layout
         static let headerHeight: CGFloat = 60
         
+        static let hypnosisViewSize: CGFloat = 172
+        static let hypnosisViewBottom: CGFloat = 20
+        static let hypnosisViewRight: CGFloat = 20
+
         static let backButtonSize: CGFloat = 30
         static let backButtonLeft: CGFloat = 10
         static let backButtonBottom: CGFloat = 0
@@ -44,6 +48,7 @@ final class GalleryViewController: UIViewController {
         // Images
         static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
         static let heartImage: UIImage = UIImage(named: "heartIcon") ?? UIImage()
+        static let hypnosisImage: UIImage = UIImage(named: "hypnosis") ?? UIImage()
     }
     
     // MARK: - Section
@@ -57,6 +62,9 @@ final class GalleryViewController: UIViewController {
     private let backButton: UIButton = UIButton(type: .system)
     private let favouritesButton: UIButton = UIButton(type: .system)
     
+    // Images
+    private let hypnosisImageView: UIImageView = UIImageView()
+
     // Views
     private let headerView: UIView = UIView()
     private let logoView: UIView = LogoView()
@@ -94,6 +102,7 @@ final class GalleryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         configureData()
         configureUI()
         configureCollectionView()
@@ -109,12 +118,27 @@ final class GalleryViewController: UIViewController {
     
     // MARK: - UI configuration
     private func configureUI() {
-        view.backgroundColor = Const.bgColor
-        
+        configureBackground()
         configureHeader()
         configureCollectionViewLayout()
     }
     
+    private func configureBackground() {
+        view.backgroundColor = Const.bgColor
+
+        view.addSubview(hypnosisImageView)
+        
+        hypnosisImageView.image = Const.hypnosisImage
+        hypnosisImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            hypnosisImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Const.hypnosisViewRight),
+            hypnosisImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Const.hypnosisViewBottom),
+            hypnosisImageView.widthAnchor.constraint(equalToConstant: Const.hypnosisViewSize),
+            hypnosisImageView.heightAnchor.constraint(equalToConstant: Const.hypnosisViewSize),
+        ])
+    }
+
     private func configureHeader() {
         view.addSubview(headerView)
         
