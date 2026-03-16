@@ -103,9 +103,9 @@ final class AppCoordinator: Coordinator {
         let viewController = GalleryViewController(answers: answers)
         
         viewController.onBackTapped = { [weak self] in
-                self?.navigationController.popViewController(animated: true)
+            self?.navigationController.popViewController(animated: true)
         }
-            
+        
         viewController.onFavouritesTapped = { [weak self] in
             self?.showFavourites()
         }
@@ -121,7 +121,11 @@ final class AppCoordinator: Coordinator {
         let viewController = FavouritesViewController()
         
         viewController.onBackTapped = { [weak self] in
-            self?.showStart()
+            self?.navigationController.popViewController(animated: true)
+        }
+        
+        viewController.onArtworkTapped = { [weak self] artwork in
+            self?.showArtworkDetails(with: artwork)
         }
         
         navigationController.pushViewController(viewController, animated: true)

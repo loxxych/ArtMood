@@ -46,8 +46,8 @@ final class ArtworkDetailsCardView: UIView {
         static let tintColor: UIColor = .black
         
         // Images
-        static let heartAssetName: String = "heartIcon"
-        static let heartImage: UIImage = UIImage(named: heartAssetName) ?? UIImage()
+        static let heartImage: UIImage = UIImage(named: "heartIcon") ?? UIImage()
+        static let filledHeartImage: UIImage = UIImage(named: "filledHeartIcon") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -66,6 +66,7 @@ final class ArtworkDetailsCardView: UIView {
     
     // Other
     private var artwork: Artwork?
+    private var isFavourite: Bool = false
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -109,12 +110,14 @@ final class ArtworkDetailsCardView: UIView {
     
     private func configureFavouriteButton() {
         addSubview(favouriteButton)
-        
+
         favouriteButton.tintColor = Const.tintColor
         favouriteButton.setImage(Const.heartImage.withRenderingMode(.alwaysTemplate), for: .normal)
+        favouriteButton.imageView?.contentMode = .scaleAspectFit
+        favouriteButton.clipsToBounds = true
         favouriteButton.addTarget(self, action: #selector(favouriteButtonTapped), for: .touchUpInside)
         favouriteButton.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             favouriteButton.widthAnchor.constraint(equalToConstant: Const.favouriteButtonSize),
             favouriteButton.heightAnchor.constraint(equalToConstant: Const.favouriteButtonSize),
@@ -155,17 +158,37 @@ final class ArtworkDetailsCardView: UIView {
     }
     
     // MARK: - Configuration
-    func configure(with artwork: Artwork) {
+    func configure(
+        with artwork: Artwork,
+        isFavourite: Bool
+    ) {
         self.artwork = artwork
+        self.isFavourite = isFavourite
         
         titleLabel.text = artwork.title
         artistLabel.text = "\(artwork.artist)\n\(artwork.year)"
         artworkImageView.image = UIImage(named: artwork.imageName)
+        
+        updateFavouriteButton()
     }
     
     // MARK: - Actions
     @objc
     private func favouriteButtonTapped() {
         onFavouriteTapped?()
+    }
+    
+    // MARK: - Favourites logic
+    func setFavourite(_ isFavourite: Bool) {
+        self.isFavourite = isFavourite
+        updateFavouriteButton()
+    }
+
+    private func updateFavouriteButton() {
+        let image: UIImage = isFavourite
+            ? Const.filledHeartImage
+            : Const.heartImage
+        
+        favouriteButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
     }
 }

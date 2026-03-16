@@ -8,7 +8,7 @@
 import Foundation
 
 struct Artwork {
-    let id: UUID
+    let id: String
     let title: String
     let artist: String
     let year: String

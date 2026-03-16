@@ -55,7 +55,7 @@ final class GalleryViewController: UIViewController {
         static let arrowAssetName: String = "arrowLeft"
         static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
         
-        static let heartAssetName: String = "heart"
+        static let heartAssetName: String = "heartIcon"
         static let heartImage: UIImage = UIImage(named: heartAssetName) ?? UIImage()
     }
     

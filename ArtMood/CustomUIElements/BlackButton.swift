@@ -30,7 +30,7 @@ final class BlackButton: UIButton {
         static let foregroundColor: UIColor = .white
         
         // Images
-        static let heartAssetName: String = "heartIcon"
+        static let heartAssetName: String = "smallHeartIcon"
         static let heart: UIImage = UIImage(named: heartAssetName) ?? UIImage()
     }
     

@@ -51,6 +51,7 @@ final class ArtworkDetailsViewController: UIViewController {
     
     // Other
     private let artwork: Artwork
+    private let favouritesStore: FavouritesStore = FavouritesStore.shared
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -123,12 +124,24 @@ final class ArtworkDetailsViewController: UIViewController {
     }
     
     private func configureContent() {
-        detailsCardView.configure(with: artwork)
+        let isFavourite: Bool = favouritesStore.isFavourite(id: artwork.id)
+        detailsCardView.configure(with: artwork, isFavourite: isFavourite)
     }
     
     private func configureActions() {
         detailsCardView.onFavouriteTapped = { [weak self] in
             guard let self else { return }
+
+            print("Before toggle:", self.favouritesStore.getFavouriteIDs())
+
+            self.favouritesStore.toggleFavourite(id: self.artwork.id)
+
+            print("After toggle:", self.favouritesStore.getFavouriteIDs())
+
+            let isFavourite: Bool = self.favouritesStore.isFavourite(id: self.artwork.id)
+            print("isFavourite:", isFavourite)
+
+            self.detailsCardView.setFavourite(isFavourite)
             self.onFavouriteTapped?(self.artwork)
         }
     }

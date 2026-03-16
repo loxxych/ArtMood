@@ -26,9 +26,9 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		59575C792F67845900752ABD /* Data */ = {
+		59575C792F67845900752ABD /* Persistence */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Data;
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		59B15B602F66C256002D0485 /* ArtMood */ = {
@@ -55,7 +55,7 @@
 		59B15B552F66C256002D0485 = {
 			isa = PBXGroup;
 			children = (
-				59575C792F67845900752ABD /* Data */,
+				59575C792F67845900752ABD /* Persistence */,
 				59575C742F6782AC00752ABD /* Services */,
 				59B15B602F66C256002D0485 /* ArtMood */,
 				59B15B5F2F66C256002D0485 /* Products */,
@@ -87,7 +87,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				59575C742F6782AC00752ABD /* Services */,
-				59575C792F67845900752ABD /* Data */,
+				59575C792F67845900752ABD /* Persistence */,
 				59B15B602F66C256002D0485 /* ArtMood */,
 			);
 			name = ArtMood;
