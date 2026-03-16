@@ -132,14 +132,9 @@ final class ArtworkDetailsViewController: UIViewController {
         detailsCardView.onFavouriteTapped = { [weak self] in
             guard let self else { return }
 
-            print("Before toggle:", self.favouritesStore.getFavouriteIDs())
-
             self.favouritesStore.toggleFavourite(id: self.artwork.id)
 
-            print("After toggle:", self.favouritesStore.getFavouriteIDs())
-
             let isFavourite: Bool = self.favouritesStore.isFavourite(id: self.artwork.id)
-            print("isFavourite:", isFavourite)
 
             self.detailsCardView.setFavourite(isFavourite)
             self.onFavouriteTapped?(self.artwork)

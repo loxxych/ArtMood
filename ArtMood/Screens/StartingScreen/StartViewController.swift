@@ -25,6 +25,24 @@ class StartViewController: UIViewController {
         static let startButtonBottom: CGFloat = 25
         static let favButtonBottom: CGFloat = 30
         
+        static let rightDotsSize: CGFloat = 120
+        static let rightDotsRight: CGFloat = 20
+        static let rightDotsCenterY: CGFloat = 120
+
+        static let hypnosisSize: CGFloat = 120
+        static let hypnosisBottom: CGFloat = 140
+
+        static let leftArtworkHeight: CGFloat = 240
+        static let leftArtworkWidth: CGFloat = 120
+
+        static let rightArtworkSize: CGFloat = 120
+        static let rightArtworkBottom: CGFloat = 26
+
+        static let ornamentWidth: CGFloat = 120
+        static let ornamentHeight: CGFloat = 120
+        static let ornamentCenterX: CGFloat = 30
+        static let ornamentBottom: CGFloat = 0
+                
         // Numbers
         static let descNumOfLines = 2
         
@@ -36,6 +54,11 @@ class StartViewController: UIViewController {
         
         // Images
         static let logoImage: UIImage = UIImage(named: "Logo") ?? UIImage()
+        static let rightDotsImage: UIImage = UIImage(named: "dotsCircle") ?? UIImage()
+        static let hypnosisImage: UIImage = UIImage(named: "hypnosis") ?? UIImage()
+        static let flowerImage: UIImage = UIImage(named: "flower") ?? UIImage()
+        static let artwork1: UIImage = UIImage(named: "startArtwork1") ?? UIImage()
+        static let artwork2: UIImage = UIImage(named: "startArtwork2") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -49,6 +72,11 @@ class StartViewController: UIViewController {
     
     // Images
     private let logoImageView: UIImageView = UIImageView()
+    private let rightDotsImageView: UIImageView = UIImageView()
+    private let hypnosisImageView: UIImageView = UIImageView()
+    private let bottomLeftArtworkImageView: UIImageView = UIImageView()
+    private let bottomOrnamentImageView: UIImageView = UIImageView()
+    private let bottomRightArtworkImageView: UIImageView = UIImageView()
     
     // Closures
     var onGetStarted: (()->())?
@@ -67,17 +95,86 @@ class StartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        prepareAnimationState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        runAppearAnimations()
     }
     
     // MARK: - UI configuration
     private func configureUI() {
-        view.backgroundColor = Const.bgColor
-        
+        configureBackground()
         configureLogoImageView()
         configureTitleLabel()
         configureDescriptionLabel()
         configureFavouritesButton()
         configureStartButton()
+    }
+    
+    private func configureBackground() {
+        view.backgroundColor = Const.bgColor
+        
+        rightDotsImageView.image = Const.rightDotsImage
+        hypnosisImageView.image = Const.hypnosisImage
+        bottomOrnamentImageView.image = Const.flowerImage
+        bottomLeftArtworkImageView.image = Const.artwork1
+        bottomRightArtworkImageView.image = Const.artwork2
+        
+        rightDotsImageView.contentMode = .scaleAspectFit
+        hypnosisImageView.contentMode = .scaleAspectFit
+        bottomOrnamentImageView.contentMode = .scaleAspectFit
+        bottomLeftArtworkImageView.contentMode = .scaleAspectFill
+        bottomRightArtworkImageView.contentMode = .scaleAspectFill
+        
+        bottomLeftArtworkImageView.clipsToBounds = true
+        bottomRightArtworkImageView.clipsToBounds = true
+        
+        view.addSubview(rightDotsImageView)
+        view.addSubview(hypnosisImageView)
+        view.addSubview(bottomLeftArtworkImageView)
+        view.addSubview(bottomRightArtworkImageView)
+        view.addSubview(bottomOrnamentImageView)
+        
+        rightDotsImageView.translatesAutoresizingMaskIntoConstraints = false
+        hypnosisImageView.translatesAutoresizingMaskIntoConstraints = false
+        bottomLeftArtworkImageView.translatesAutoresizingMaskIntoConstraints = false
+        bottomRightArtworkImageView.translatesAutoresizingMaskIntoConstraints = false
+        bottomOrnamentImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            rightDotsImageView.widthAnchor.constraint(equalToConstant: Const.rightDotsSize),
+            rightDotsImageView.heightAnchor.constraint(equalToConstant: Const.rightDotsSize),
+            rightDotsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Const.rightDotsRight),
+            rightDotsImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: Const.rightDotsCenterY),
+            
+            hypnosisImageView.widthAnchor.constraint(equalToConstant: Const.hypnosisSize),
+            hypnosisImageView.heightAnchor.constraint(equalToConstant: Const.hypnosisSize),
+            hypnosisImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hypnosisImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150),
+            
+            bottomLeftArtworkImageView.widthAnchor.constraint(equalToConstant: Const.leftArtworkWidth),
+            bottomLeftArtworkImageView.heightAnchor.constraint(equalToConstant: Const.leftArtworkHeight),
+            bottomLeftArtworkImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomLeftArtworkImageView.topAnchor.constraint(equalTo: hypnosisImageView.bottomAnchor),
+            
+            bottomRightArtworkImageView.widthAnchor.constraint(equalToConstant: Const.rightArtworkSize),
+            bottomRightArtworkImageView.heightAnchor.constraint(equalToConstant: Const.rightArtworkSize),
+            bottomRightArtworkImageView.leadingAnchor.constraint(equalTo: bottomLeftArtworkImageView.trailingAnchor),
+            bottomRightArtworkImageView.topAnchor.constraint(equalTo: bottomLeftArtworkImageView.topAnchor),
+            
+            bottomOrnamentImageView.widthAnchor.constraint(equalToConstant: Const.ornamentWidth),
+            bottomOrnamentImageView.heightAnchor.constraint(equalToConstant: Const.ornamentHeight),
+            bottomOrnamentImageView.topAnchor.constraint(equalTo: bottomRightArtworkImageView.bottomAnchor),
+            bottomOrnamentImageView.leadingAnchor.constraint(equalTo: bottomRightArtworkImageView.leadingAnchor)
+        ])
+        
+        view.sendSubviewToBack(rightDotsImageView)
+        view.sendSubviewToBack(hypnosisImageView)
+        view.sendSubviewToBack(bottomLeftArtworkImageView)
+        view.sendSubviewToBack(bottomRightArtworkImageView)
+        view.sendSubviewToBack(bottomOrnamentImageView)
     }
     
     private func configureLogoImageView() {
@@ -159,6 +256,96 @@ class StartViewController: UIViewController {
     @objc
     private func favouritesButtonTapped() {
         onFavouritesTapped?()
+    }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        logoImageView.alpha = 0
+        titleLabel.alpha = 0
+        descriptionLabel.alpha = 0
+        
+        rightDotsImageView.alpha = 0
+        hypnosisImageView.alpha = 0
+        bottomLeftArtworkImageView.alpha = 0
+        bottomRightArtworkImageView.alpha = 0
+        bottomOrnamentImageView.alpha = 0
+        startButton.alpha = 0
+        favouritesButton.alpha = 0
+        
+        rightDotsImageView.transform = CGAffineTransform(translationX: 80, y: 0)
+        hypnosisImageView.transform = CGAffineTransform(translationX: 0, y: 50)
+        bottomLeftArtworkImageView.transform = CGAffineTransform(translationX: 0, y: 80)
+        bottomRightArtworkImageView.transform = CGAffineTransform(translationX: 0, y: 80)
+        bottomOrnamentImageView.transform = CGAffineTransform(translationX: 0, y: 80)
+        startButton.transform = CGAffineTransform(translationX: 0, y: 60)
+        favouritesButton.transform = CGAffineTransform(translationX: 0, y: 60)
+        logoImageView.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: 12)
+        descriptionLabel.transform = CGAffineTransform(translationX: 0, y: 12)
+    }
+    
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.5) {
+            self.logoImageView.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0.15, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0.28, options: [.curveEaseOut]) {
+            self.descriptionLabel.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.5) {
+            self.logoImageView.alpha = 1
+            self.logoImageView.transform = .identity
+        }
+
+        UIView.animate(withDuration: 0.5, delay: 0.15, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = 1
+            self.titleLabel.transform = .identity
+        }
+
+        UIView.animate(withDuration: 0.5, delay: 0.28, options: [.curveEaseOut]) {
+            self.descriptionLabel.alpha = 1
+            self.descriptionLabel.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.55, delay: 0.4, options: [.curveEaseOut]) {
+            self.rightDotsImageView.alpha = 1
+            self.rightDotsImageView.transform = .identity
+            
+            self.hypnosisImageView.alpha = 1
+            self.hypnosisImageView.transform = .identity
+            
+            self.bottomLeftArtworkImageView.alpha = 1
+            self.bottomLeftArtworkImageView.transform = .identity
+            
+            self.bottomRightArtworkImageView.alpha = 1
+            self.bottomRightArtworkImageView.transform = .identity
+            
+            self.bottomOrnamentImageView.alpha = 1
+            self.bottomOrnamentImageView.transform = .identity
+            
+            self.startButton.alpha = 1
+            self.startButton.transform = .identity
+            
+            self.favouritesButton.alpha = 1
+            self.favouritesButton.transform = .identity
+
+        } completion: { _ in
+            self.startHypnosisRotation()
+        }
+    }
+    
+    private func startHypnosisRotation() {
+        let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        rotation.toValue = CGFloat.pi * 2
+        rotation.duration = 4
+        rotation.isCumulative = true
+        rotation.repeatCount = .infinity
+        hypnosisImageView.layer.add(rotation, forKey: "rotationAnimation")
     }
 }
 

@@ -47,17 +47,28 @@ final class MoodPickViewController: UIViewController {
         static let moodButtonCornerRadius: CGFloat = 30
         static let moodButtonBorderWidth: CGFloat = 1
         
+        static let artworkTop: CGFloat = 10
+        static let artworkSize: CGFloat = 120
+
+        static let ornamentLeft: CGFloat = 10
+        static let ornamentBottom: CGFloat = artworkTop
+        static let ornamentSize: CGFloat = 120
+
+        static let starRight: CGFloat = 25
+        static let starTop: CGFloat = 150
+        static let starSize: CGFloat = 143
+
         // Numbers
         static let titleNumOfLines: Int = 3
         
         // Fonts
         static let counterFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 22)
             ?? .systemFont(ofSize: 22, weight: .semibold)
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 42)
-            ?? .systemFont(ofSize: 42, weight: .regular)
-        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 42)
-            ?? .boldSystemFont(ofSize: 42)
-        static let optionFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 18)
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 48)
+            ?? .systemFont(ofSize: 60, weight: .regular)
+        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 48)
+            ?? .boldSystemFont(ofSize: 60)
+        static let optionFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15)
             ?? .systemFont(ofSize: 18, weight: .regular)
         
         // Colors
@@ -70,8 +81,10 @@ final class MoodPickViewController: UIViewController {
         static let neutralColor: UIColor = UIColor(white: 0.82, alpha: 1.0)
         
         // Images
-        static let arrowAssetName: String = "arrowLeft"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
+        static let artworkImage: UIImage = UIImage(named: "moodPickArtwork") ?? UIImage()
+        static let greenStarImage: UIImage = UIImage(named: "greenStar") ?? UIImage()
+        static let ornamentImage: UIImage = UIImage(named: "flower") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -89,7 +102,10 @@ final class MoodPickViewController: UIViewController {
     // Views
     private let optionsContainerView: UIView = UIView()
     private let topOptionsStackView: UIStackView = UIStackView()
-    
+    private let rightTopArtworkImageView: UIImageView = UIImageView()
+    private let greenStarImageView: UIImageView = UIImageView()
+    private let ornamentImageView: UIImageView = UIImageView()
+
     // Closures
     var onMoodSelected: ((Mood) -> ())?
     var onBackTapped: (() -> ())?
@@ -115,13 +131,52 @@ final class MoodPickViewController: UIViewController {
     
     // MARK: - UI configuration
     private func configureUI() {
-        view.backgroundColor = Const.bgColor
-        
+        configureBackground()
         configureBackButton()
         configureCounterLabel()
         configureTitleLabel()
         configureOptions()
         configureNextButton()
+        
+        prepareAnimationState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        runAppearAnimations()
+    }
+    
+    private func configureBackground() {
+        view.backgroundColor = Const.bgColor
+
+        view.addSubview(rightTopArtworkImageView)
+        view.addSubview(greenStarImageView)
+        view.addSubview(ornamentImageView)
+        
+        rightTopArtworkImageView.image = Const.artworkImage
+        greenStarImageView.image = Const.greenStarImage
+        ornamentImageView.image = Const.ornamentImage
+
+        rightTopArtworkImageView.translatesAutoresizingMaskIntoConstraints = false
+        greenStarImageView.translatesAutoresizingMaskIntoConstraints = false
+        ornamentImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            rightTopArtworkImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.artworkTop),
+            rightTopArtworkImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            rightTopArtworkImageView.heightAnchor.constraint(equalToConstant: Const.artworkSize),
+            rightTopArtworkImageView.widthAnchor.constraint(equalToConstant: Const.artworkSize),
+            
+            greenStarImageView.heightAnchor.constraint(equalToConstant: Const.starSize),
+            greenStarImageView.widthAnchor.constraint(equalToConstant: Const.starSize),
+            greenStarImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.starRight),
+            greenStarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.starTop),
+            
+            ornamentImageView.heightAnchor.constraint(equalToConstant: Const.ornamentSize),
+            ornamentImageView.widthAnchor.constraint(equalToConstant: Const.ornamentSize),
+            ornamentImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.ornamentLeft),
+            ornamentImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.ornamentBottom),
+        ])
     }
     
     private func configureBackButton() {
@@ -335,12 +390,13 @@ final class MoodPickViewController: UIViewController {
         ])
     }
     
+    // MARK: - Utility
     private func makeTitleText() -> NSAttributedString {
         let attributedText: NSMutableAttributedString = NSMutableAttributedString(
             string: "What is your\n",
             attributes: [
                 .font: Const.titleFont,
-                .foregroundColor: UIColor.black
+                .foregroundColor: UIColor.black,
             ]
         )
         
@@ -394,6 +450,7 @@ final class MoodPickViewController: UIViewController {
         nextButton.alpha = mood == nil ? 0.6 : 1.0
     }
     
+    // MARK: - Selection logic
     private func selectHappy() {
         mood = .happy
         updateSelectionUI()
@@ -434,5 +491,56 @@ final class MoodPickViewController: UIViewController {
     @objc
     private func backButtonTapped() {
         onBackTapped?()
+    }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        counterLabel.alpha = 0
+        rightTopArtworkImageView.alpha = 0
+        ornamentImageView.alpha = 0
+        greenStarImageView.alpha = 0
+        
+        titleLabel.alpha = 0
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        
+//        outlineMoodLabel.alpha = 1
+//        outlineMoodLabel.transform = CGAffineTransform(scaleX: 1.08, y: 1.08)
+        
+        sadButton.alpha = 0
+        happyButton.alpha = 0
+        neutralButton.alpha = 0
+        
+        nextButton.alpha = 0
+        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+    }
+    
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.35) {
+            self.counterLabel.alpha = 1
+            self.rightTopArtworkImageView.alpha = 1
+            self.ornamentImageView.alpha = 1
+            self.greenStarImageView.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = 1
+            self.titleLabel.transform = .identity
+        }
+        
+//        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
+//            //self.outlineMoodLabel.alpha = 0
+//            //self.outlineMoodLabel.transform = CGAffineTransform(scaleX: 1.16, y: 1.16)
+//        }
+        
+        UIView.animate(withDuration: 0.35, delay: 0.45, options: [.curveEaseOut]) {
+            self.sadButton.alpha = 1
+            self.happyButton.alpha = 1
+            self.neutralButton.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.35, delay: 0.62, options: [.curveEaseOut]) {
+            self.nextButton.alpha = 1
+            self.nextButton.transform = .identity
+        }
     }
 }
