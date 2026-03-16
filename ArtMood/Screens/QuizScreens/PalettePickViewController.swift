@@ -74,7 +74,7 @@ final class PalettePickViewController: UIViewController {
         static let optionBorderWidth: CGFloat = 1
         
         // Fonts
-        static let counterFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 22)
+        static let counterFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 22)
             ?? .systemFont(ofSize: 22, weight: .semibold)
         static let titleFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 42)
             ?? .boldSystemFont(ofSize: 42)

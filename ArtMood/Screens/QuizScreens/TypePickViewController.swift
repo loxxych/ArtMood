@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TypePickViewController: UIViewController {
+final class TypePickViewController: UIViewController {
     // MARK: - Constants
     private enum Const {
         // Strings
@@ -31,34 +31,40 @@ class TypePickViewController: UIViewController {
         static let titleLeft: CGFloat = 24
         static let titleRight: CGFloat = 24
         
-        static let buttonsTop: CGFloat = 36
-        static let buttonsLeft: CGFloat = 16
-        static let buttonsSpacing: CGFloat = 18
+        static let buttonsTop: CGFloat = 45
+        static let buttonsLeft: CGFloat = titleLeft
+        static let buttonsSpacing: CGFloat = 16
         static let buttonWidth: CGFloat = 178
         static let buttonHeight: CGFloat = 46
         static let buttonCornerRadius: CGFloat = 23
         static let buttonBorderWidth: CGFloat = 1
         
-        static let topImageTop: CGFloat = 320
-        static let topImageRight: CGFloat = 0
-        static let topImageSize: CGFloat = 168
+        static let topImageTop: CGFloat = 230
+        static let topImageRight: CGFloat = 50
+        static let topImageSize: CGFloat = 224
         
-        static let bottomImageTop: CGFloat = 530
-        static let bottomImageRight: CGFloat = 18
-        static let bottomImageWidth: CGFloat = 114
-        static let bottomImageHeight: CGFloat = 188
-        static let bottomImageCornerRadius: CGFloat = 57
+        static let bottomImageRight: CGFloat = -14
+        static let bottomImageWidth: CGFloat = 147
+        static let bottomImageHeight: CGFloat = 273
+        static let bottomImageCornerRadius: CGFloat = bottomImageWidth / 2
         
         static let nextButtonBottom: CGFloat = 18
         static let nextButtonTopSpacing: CGFloat = 36
+        
+        static let greenStarTop: CGFloat = 10
+        static let greenStarSize: CGFloat = 112
+        
+        static let leftOrnamentLeft: CGFloat = -18
+        static let leftOrnamentBottom: CGFloat = 62
+        static let leftOrnamentSize: CGFloat = 120
         
         // Numbers
         static let titleNumOfLines: Int = 4
         
         // Fonts
-        static let counterFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 22)
+        static let counterFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 22)
             ?? .systemFont(ofSize: 22, weight: .semibold)
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 38)
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 43)
             ?? .systemFont(ofSize: 38, weight: .regular)
         static let optionFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 16)
             ?? .systemFont(ofSize: 16, weight: .regular)
@@ -73,10 +79,11 @@ class TypePickViewController: UIViewController {
         static let borderColor: UIColor = .black
         
         // Images
-        static let arrowAssetName: String = "arrowLeft"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
         static let topArtworkImage: UIImage = UIImage(named: "typePortrait") ?? UIImage()
-        static let bottomArtworkImage: UIImage = UIImage(named: "typeStillLife") ?? UIImage()
+        static let bottomArtworkImage: UIImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+        static let greenStarImage: UIImage = UIImage(named: "greenStar") ?? UIImage()
+        static let leftOrnamentImage: UIImage = UIImage(named: "flower") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -94,6 +101,8 @@ class TypePickViewController: UIViewController {
     // Images
     private let topArtworkImageView: UIImageView = UIImageView()
     private let bottomArtworkImageView: UIImageView = UIImageView()
+    private let greenStarImageView: UIImageView = UIImageView()
+    private let leftOrnamentImageView: UIImageView = UIImageView()
     
     // Views
     private let buttonsContainerView: UIView = UIView()
@@ -103,7 +112,7 @@ class TypePickViewController: UIViewController {
     var onBackTapped: (() -> ())?
     
     // Other
-    private var paintingType: PaintingType?
+    private var paintingType: PaintingType? = .portrait
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -119,6 +128,13 @@ class TypePickViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         updateSelectionUI()
+        
+        prepareAnimationState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        runAppearAnimations()
     }
     
     // MARK: - UI configuration
@@ -128,6 +144,7 @@ class TypePickViewController: UIViewController {
         configureBackButton()
         configureCounterLabel()
         configureTitleLabel()
+        configureDecorations()
         configureArtworkImageViews()
         configureButtonsContainerView()
         configurePortraitButton()
@@ -182,6 +199,34 @@ class TypePickViewController: UIViewController {
         ])
     }
     
+    private func configureDecorations() {
+        view.addSubview(greenStarImageView)
+        view.addSubview(leftOrnamentImageView)
+        
+        greenStarImageView.image = Const.greenStarImage
+        greenStarImageView.contentMode = .scaleAspectFit
+        greenStarImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        leftOrnamentImageView.image = Const.leftOrnamentImage
+        leftOrnamentImageView.contentMode = .scaleAspectFit
+        leftOrnamentImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            greenStarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.greenStarTop),
+            greenStarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            greenStarImageView.widthAnchor.constraint(equalToConstant: Const.greenStarSize),
+            greenStarImageView.heightAnchor.constraint(equalToConstant: Const.greenStarSize),
+            
+            leftOrnamentImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.leftOrnamentLeft),
+            leftOrnamentImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.leftOrnamentBottom),
+            leftOrnamentImageView.widthAnchor.constraint(equalToConstant: Const.leftOrnamentSize),
+            leftOrnamentImageView.heightAnchor.constraint(equalToConstant: Const.leftOrnamentSize)
+        ])
+        
+        view.sendSubviewToBack(greenStarImageView)
+        view.sendSubviewToBack(leftOrnamentImageView)
+    }
+    
     private func configureArtworkImageViews() {
         view.addSubview(topArtworkImageView)
         view.addSubview(bottomArtworkImageView)
@@ -200,11 +245,11 @@ class TypePickViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             topArtworkImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.topImageTop),
-            topArtworkImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.topImageRight),
+            topArtworkImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Const.topImageRight),
             topArtworkImageView.widthAnchor.constraint(equalToConstant: Const.topImageSize),
             topArtworkImageView.heightAnchor.constraint(equalToConstant: Const.topImageSize),
             
-            bottomArtworkImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Const.bottomImageTop),
+            bottomArtworkImageView.topAnchor.constraint(equalTo: topArtworkImageView.bottomAnchor),
             bottomArtworkImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.bottomImageRight),
             bottomArtworkImageView.widthAnchor.constraint(equalToConstant: Const.bottomImageWidth),
             bottomArtworkImageView.heightAnchor.constraint(equalToConstant: Const.bottomImageHeight)
@@ -335,22 +380,34 @@ class TypePickViewController: UIViewController {
     }
     
     private func updateArtworkImages() {
+        let topImage: UIImage
+        let bottomImage: UIImage
+        
         switch paintingType {
         case .portrait:
-            topArtworkImageView.image = UIImage(named: "typePortrait") ?? UIImage()
-            bottomArtworkImageView.image = UIImage(named: "typePortraitBottom") ?? UIImage()
+            topImage = UIImage(named: "typePortrait") ?? UIImage()
+            bottomImage = UIImage(named: "typePortraitBottom") ?? UIImage()
         case .landscape:
-            topArtworkImageView.image = UIImage(named: "typeLandscape") ?? UIImage()
-            bottomArtworkImageView.image = UIImage(named: "typeLandscapeBottom") ?? UIImage()
+            topImage = UIImage(named: "typeLandscape") ?? UIImage()
+            bottomImage = UIImage(named: "typeLandscapeBottom") ?? UIImage()
         case .stillLife:
-            topArtworkImageView.image = UIImage(named: "typeStillLife") ?? UIImage()
-            bottomArtworkImageView.image = UIImage(named: "typeStillLifeBottom") ?? UIImage()
+            topImage = UIImage(named: "typeStillLife") ?? UIImage()
+            bottomImage = UIImage(named: "typeStillLifeBottom") ?? UIImage()
         case .none:
-            topArtworkImageView.image = UIImage(named: "typePortrait") ?? UIImage()
-            bottomArtworkImageView.image = UIImage(named: "typePortraitBottom") ?? UIImage()
+            topImage = UIImage(named: "typePortrait") ?? UIImage()
+            bottomImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+        }
+        
+        UIView.transition(with: topArtworkImageView, duration: 0.3, options: .transitionCrossDissolve) {
+            self.topArtworkImageView.image = topImage
+        }
+        
+        UIView.transition(with: bottomArtworkImageView, duration: 0.3, options: .transitionCrossDissolve) {
+            self.bottomArtworkImageView.image = bottomImage
         }
     }
     
+    // MARK: - Selection logic
     private func selectPortrait() {
         paintingType = .portrait
         updateSelectionUI()
@@ -391,5 +448,62 @@ class TypePickViewController: UIViewController {
     @objc
     private func backButtonTapped() {
         onBackTapped?()
+    }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        backButton.alpha = 0
+        counterLabel.alpha = 0
+        greenStarImageView.alpha = 0
+        leftOrnamentImageView.alpha = 0
+        
+        titleLabel.alpha = 0
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        
+        portraitButton.alpha = 0
+        portraitButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        
+        landscapeButton.alpha = 0
+        landscapeButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        
+        stillLifeButton.alpha = 0
+        stillLifeButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        
+        nextButton.alpha = 0
+        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+    }
+
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.35) {
+            self.backButton.alpha = 1
+            self.counterLabel.alpha = 1
+            self.greenStarImageView.alpha = 1
+            self.leftOrnamentImageView.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = 1
+            self.titleLabel.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.35, delay: 0.42, options: [.curveEaseOut]) {
+            self.portraitButton.alpha = 1
+            self.portraitButton.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.35, delay: 0.54, options: [.curveEaseOut]) {
+            self.landscapeButton.alpha = 1
+            self.landscapeButton.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.35, delay: 0.66, options: [.curveEaseOut]) {
+            self.stillLifeButton.alpha = 1
+            self.stillLifeButton.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.4, delay: 0.82, options: [.curveEaseOut]) {
+            self.nextButton.alpha = 1
+            self.nextButton.transform = .identity
+        }
     }
 }

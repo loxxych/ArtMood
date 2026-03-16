@@ -62,11 +62,11 @@ final class MoodPickViewController: UIViewController {
         static let titleNumOfLines: Int = 3
         
         // Fonts
-        static let counterFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 22)
+        static let counterFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 22)
             ?? .systemFont(ofSize: 22, weight: .semibold)
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 48)
+        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 55)
             ?? .systemFont(ofSize: 60, weight: .regular)
-        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 48)
+        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 55)
             ?? .boldSystemFont(ofSize: 60)
         static let optionFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 15)
             ?? .systemFont(ofSize: 18, weight: .regular)
