@@ -12,6 +12,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     private enum Const {
         // Strings
         static let identifier: String = "GalleryCollectionViewCell"
+        static let fatalError: String = "init(coder:) has not been implemented"
         
         // Layout
         static let cornerRadius: CGFloat = 28
@@ -51,7 +52,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = UILabel()
     
     // Views
-    private let artworkImagePlaceholderView: UIView = UIView()
+    private let artworkImageView: UIImageView = UIImageView()
     private let arrowImageView: UIImageView = UIImageView()
     
     // Other
@@ -65,7 +66,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError(Const.fatalError)
     }
     
     // MARK: - UI configuration
@@ -76,26 +77,25 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         contentView.layer.borderColor = Const.borderColor.cgColor
         contentView.clipsToBounds = true
         
-        configureArtworkImagePlaceholderView()
+        configureArtworkImageView()
         configureTitleLabel()
         configureArrowImageView()
     }
     
-    private func configureArtworkImagePlaceholderView() {
-        contentView.addSubview(artworkImagePlaceholderView)
+    private func configureArtworkImageView() {
+        contentView.addSubview(artworkImageView)
         
-        artworkImagePlaceholderView.backgroundColor = Const.imagePlaceholderColor
-        artworkImagePlaceholderView.layer.cornerRadius = 24
+        artworkImageView.layer.cornerRadius = 24
+        artworkImageView.contentMode = .scaleAspectFill
+        artworkImageView.clipsToBounds = true
         
-        artworkImagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
-        
-        imageHeightConstraint = artworkImagePlaceholderView.heightAnchor.constraint(equalToConstant: Const.imageHeight)
+        artworkImageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            artworkImagePlaceholderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.imageTop),
-            artworkImagePlaceholderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.imageLeft),
-            artworkImagePlaceholderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.imageRight),
-            imageHeightConstraint!
+            artworkImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Const.imageTop),
+            artworkImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.imageLeft),
+            artworkImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.imageRight),
+            artworkImageView.heightAnchor.constraint(equalToConstant: Const.imageHeight)
         ])
     }
     
@@ -109,7 +109,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: artworkImagePlaceholderView.bottomAnchor, constant: Const.titleTop),
+            titleLabel.topAnchor.constraint(equalTo: artworkImageView.bottomAnchor, constant: Const.titleTop),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Const.titleLeft),
             titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Const.titleBottom)
         ])
@@ -136,14 +136,15 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     // MARK: - Configuration
     func configure(with artwork: Artwork) {
         titleLabel.text = artwork.title
+        artworkImageView.image = UIImage(named: artwork.imageName)
     }
     
-    func setPlaceholderHeight(_ height: CGFloat) {
+    func setImageHeight(_ height: CGFloat) {
         imageHeightConstraint?.constant = height
     }
 }
 
-// MARK: - Reuse identifier
+// MARK: - UICollectionViewCell
 extension GalleryCollectionViewCell {
-    static let reuseIdentifier: String = "GalleryCollectionViewCell"
+    static let reuseIdentifier: String = Const.identifier
 }
