@@ -25,6 +25,27 @@ final class ArtworkDetailsViewController: UIViewController {
         static let cardLeft: CGFloat = 18
         static let cardRight: CGFloat = 18
         
+        static let rightDotsSize: CGFloat = 120
+        static let rightDotsRight: CGFloat = 34
+        static let rightDotsCenterY: CGFloat = 120
+
+        static let hypnosisSize: CGFloat = 120
+        static let hypnosisRight: CGFloat = rightDotsRight
+        static let hypnosisCenterY: CGFloat = 170
+
+        static let bottomStarSize: CGFloat = 120
+        static let bottomStarBottom: CGFloat = 70
+
+        static let leftOrnamentSize: CGFloat = 120
+        static let leftOrnamentLeft: CGFloat = -20
+        static let leftOrnamentBottom: CGFloat = 18
+
+        // Images
+        static let rightDotsImage: UIImage = UIImage(named: "dotsCircle") ?? UIImage()
+        static let hypnosisImage: UIImage = UIImage(named: "hypnosis") ?? UIImage()
+        static let bottomStarImage: UIImage = UIImage(named: "greenStar") ?? UIImage()
+        static let leftOrnamentImage: UIImage = UIImage(named: "flower") ?? UIImage()
+        
         // Colors
         static let bgColor: UIColor = .white
         static let tintColor: UIColor = .black
@@ -41,6 +62,12 @@ final class ArtworkDetailsViewController: UIViewController {
     // Views
     private let topDecorImageView: UIImageView = UIImageView()
     private let detailsCardView: ArtworkDetailsCardView = ArtworkDetailsCardView()
+    
+    // Images
+    private let rightDotsImageView: UIImageView = UIImageView()
+    private let hypnosisImageView: UIImageView = UIImageView()
+    private let bottomStarImageView: UIImageView = UIImageView()
+    private let leftOrnamentImageView: UIImageView = UIImageView()
     
     // Closures
     var onBackTapped: (() -> ())?
@@ -65,15 +92,72 @@ final class ArtworkDetailsViewController: UIViewController {
         configureUI()
         configureContent()
         configureActions()
+        prepareAnimationState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        runAppearAnimations()
     }
     
     // MARK: - UI configuration
     private func configureUI() {
-        view.backgroundColor = Const.bgColor
-        
+        configureBackground()
         configureBackButton()
         configureTopDecorImageView()
         configureDetailsCardView()
+    }
+    
+    private func configureBackground() {
+        view.backgroundColor = Const.bgColor
+        
+        view.addSubview(rightDotsImageView)
+        view.addSubview(hypnosisImageView)
+        view.addSubview(bottomStarImageView)
+        view.addSubview(leftOrnamentImageView)
+        
+        rightDotsImageView.image = Const.rightDotsImage
+        hypnosisImageView.image = Const.hypnosisImage
+        bottomStarImageView.image = Const.bottomStarImage
+        leftOrnamentImageView.image = Const.leftOrnamentImage
+        
+        rightDotsImageView.contentMode = .scaleAspectFit
+        hypnosisImageView.contentMode = .scaleAspectFit
+        bottomStarImageView.contentMode = .scaleAspectFit
+        leftOrnamentImageView.contentMode = .scaleAspectFit
+        
+        rightDotsImageView.translatesAutoresizingMaskIntoConstraints = false
+        hypnosisImageView.translatesAutoresizingMaskIntoConstraints = false
+        bottomStarImageView.translatesAutoresizingMaskIntoConstraints = false
+        leftOrnamentImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            rightDotsImageView.widthAnchor.constraint(equalToConstant: Const.rightDotsSize),
+            rightDotsImageView.heightAnchor.constraint(equalToConstant: Const.rightDotsSize),
+            rightDotsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Const.rightDotsRight),
+            rightDotsImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            hypnosisImageView.widthAnchor.constraint(equalToConstant: Const.hypnosisSize),
+            hypnosisImageView.heightAnchor.constraint(equalToConstant: Const.hypnosisSize),
+            hypnosisImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Const.hypnosisRight),
+            hypnosisImageView.topAnchor.constraint(equalTo: rightDotsImageView.bottomAnchor),
+            
+            bottomStarImageView.widthAnchor.constraint(equalToConstant: Const.bottomStarSize),
+            bottomStarImageView.heightAnchor.constraint(equalToConstant: Const.bottomStarSize),
+            bottomStarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            bottomStarImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.bottomStarBottom),
+            
+            leftOrnamentImageView.widthAnchor.constraint(equalToConstant: Const.leftOrnamentSize),
+            leftOrnamentImageView.heightAnchor.constraint(equalToConstant: Const.leftOrnamentSize),
+            leftOrnamentImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Const.leftOrnamentLeft),
+            leftOrnamentImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: Const.leftOrnamentBottom)
+        ])
+        
+        view.sendSubviewToBack(rightDotsImageView)
+        view.sendSubviewToBack(hypnosisImageView)
+        view.sendSubviewToBack(bottomStarImageView)
+        view.sendSubviewToBack(leftOrnamentImageView)
     }
     
     private func configureBackButton() {
@@ -151,5 +235,57 @@ final class ArtworkDetailsViewController: UIViewController {
         let viewController = FullScreenArtworkViewController(artwork: vm.artwork)
         viewController.modalPresentationStyle = .fullScreen
         present(viewController, animated: true)
+    }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        backButton.alpha = 0
+        topDecorImageView.alpha = 0
+        
+        rightDotsImageView.alpha = 0
+        hypnosisImageView.alpha = 0
+        bottomStarImageView.alpha = 0
+        leftOrnamentImageView.alpha = 0
+        
+        detailsCardView.alpha = 0
+        
+        backButton.transform = CGAffineTransform(translationX: -12, y: 0)
+        topDecorImageView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        
+        rightDotsImageView.transform = CGAffineTransform(translationX: 20, y: 0)
+        hypnosisImageView.transform = CGAffineTransform(translationX: 20, y: 10)
+        bottomStarImageView.transform = CGAffineTransform(translationX: 0, y: 20)
+        leftOrnamentImageView.transform = CGAffineTransform(translationX: -20, y: 20)
+        
+        detailsCardView.transform = CGAffineTransform(translationX: 0, y: 32)
+    }
+
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
+            self.backButton.alpha = 1
+            self.backButton.transform = .identity
+            
+            self.topDecorImageView.alpha = 1
+            self.topDecorImageView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.4, delay: 0.1, options: [.curveEaseOut]) {
+            self.rightDotsImageView.alpha = 1
+            self.rightDotsImageView.transform = .identity
+            
+            self.hypnosisImageView.alpha = 1
+            self.hypnosisImageView.transform = .identity
+            
+            self.bottomStarImageView.alpha = 1
+            self.bottomStarImageView.transform = .identity
+            
+            self.leftOrnamentImageView.alpha = 1
+            self.leftOrnamentImageView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.2, options: [.curveEaseOut]) {
+            self.detailsCardView.alpha = 1
+            self.detailsCardView.transform = .identity
+        }
     }
 }

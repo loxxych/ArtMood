@@ -42,7 +42,6 @@ final class FavouritesViewController: UIViewController {
     }
     
     // MARK: - Fields
-    // Labels
     // Buttons
     private let backButton: UIButton = UIButton(type: .system)
     
@@ -57,6 +56,7 @@ final class FavouritesViewController: UIViewController {
     
     // Other
     private let vm = FavouritesViewModel()
+    private var hasAnimated: Bool = false
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -79,6 +79,7 @@ final class FavouritesViewController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureCollectionView()
+        prepareAnimationState()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,6 +87,15 @@ final class FavouritesViewController: UIViewController {
         
         vm.loadArtworks()
         collectionView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard !hasAnimated else { return }
+        hasAnimated = true
+        
+        runAppearAnimations()
     }
     
     // MARK: - UI configuration
@@ -191,6 +201,27 @@ final class FavouritesViewController: UIViewController {
     private func backButtonTapped() {
         onBackTapped?()
     }
+    
+    // MARK: - Animations
+    private func prepareAnimationState() {
+        headerView.alpha = 0
+        collectionView.alpha = 0
+        
+        headerView.transform = CGAffineTransform(translationX: 0, y: -12)
+        collectionView.transform = CGAffineTransform(translationX: 24, y: 0)
+    }
+
+    private func runAppearAnimations() {
+        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseOut]) {
+            self.headerView.alpha = 1
+            self.headerView.transform = .identity
+        }
+        
+        UIView.animate(withDuration: 0.45, delay: 0.2, options: [.curveEaseOut]) {
+            self.collectionView.alpha = 1
+            self.collectionView.transform = .identity
+        }
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -231,6 +262,9 @@ extension FavouritesViewController: UICollectionViewDataSource {
             }
             
             cell.configure(with: vm.introItem)
+            
+            cell.alpha = 1
+            cell.transform = .identity
             return cell
             
         case .artworks:
@@ -245,6 +279,8 @@ extension FavouritesViewController: UICollectionViewDataSource {
             cell.configure(with: artwork)
             cell.setImageHeight(imageHeight(for: indexPath))
             
+            cell.alpha = 1
+            cell.transform = .identity
             return cell
         }
     }
@@ -280,5 +316,23 @@ extension FavouritesViewController: UICollectionViewDelegateFlowLayout {
         
         let artwork = vm.artworks[indexPath.item]
         onArtworkTapped?(artwork)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        willDisplay cell: UICollectionViewCell,
+        forItemAt indexPath: IndexPath
+    ) {
+        guard hasAnimated else { return }
+        
+        if cell.alpha == 1, cell.transform == .identity {
+            cell.alpha = 0
+            cell.transform = CGAffineTransform(translationX: 0, y: 16)
+            
+            UIView.animate(withDuration: 0.3, delay: 0.03 * Double(indexPath.item), options: [.curveEaseOut]) {
+                cell.alpha = 1
+                cell.transform = .identity
+            }
+        }
     }
 }
