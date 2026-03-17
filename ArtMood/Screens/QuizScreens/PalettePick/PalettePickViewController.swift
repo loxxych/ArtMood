@@ -135,7 +135,7 @@ final class PalettePickViewController: UIViewController {
     var onBackTapped: (() -> ())?
     
     // Other
-    private var palette: Palette? = .cool
+    private let vm: SingleSelectionViewModel = PalettePickViewModel()
     private var hasAnimated: Bool = false
     
     // MARK: - Lifecycle
@@ -150,8 +150,10 @@ final class PalettePickViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindViewModel()
+        render()
         configureUI()
-        updateSelectionUI()
         prepareAnimationState()
     }
     
@@ -442,16 +444,7 @@ final class PalettePickViewController: UIViewController {
         ])
     }
     
-    // MARK: - UI updating
-    private func updateSelectionUI() {
-        updatePaletteButton(button: coolButton, isSelected: palette == .cool)
-        updatePaletteButton(button: warmButton, isSelected: palette == .warm)
-        updatePaletteButton(button: contrastButton, isSelected: palette == .contrast)
-        
-        nextButton.isEnabled = palette != nil
-        nextButton.alpha = palette == nil ? 0.6 : 1.0
-    }
-    
+    // MARK: - Update logic
     private func updatePaletteButton(
         button: UIButton,
         isSelected: Bool
@@ -467,18 +460,15 @@ final class PalettePickViewController: UIViewController {
     
     // MARK: - Selection logic
     private func selectCool() {
-        palette = .cool
-        updateSelectionUI()
+        vm.select(.cool)
     }
-    
+
     private func selectWarm() {
-        palette = .warm
-        updateSelectionUI()
+        vm.select(.warm)
     }
-    
+
     private func selectContrast() {
-        palette = .contrast
-        updateSelectionUI()
+        vm.select(.contrast)
     }
     
     // MARK: - Animations
@@ -561,12 +551,28 @@ final class PalettePickViewController: UIViewController {
     
     @objc
     private func nextButtonTapped() {
-        guard let palette else { return }
+        guard let palette = vm.selectedValue else { return }
         onPaletteSelected?(palette)
     }
     
     @objc
     private func backButtonTapped() {
         onBackTapped?()
+    }
+    
+    // MARK: - Configuration and render
+    private func bindViewModel() {
+        vm.onStateChanged = { [weak self] in
+            self?.render()
+        }
+    }
+    
+    private func render() {
+        updatePaletteButton(button: coolButton, isSelected: vm.selectedValue == .cool)
+        updatePaletteButton(button: warmButton, isSelected: vm.selectedValue == .warm)
+        updatePaletteButton(button: contrastButton, isSelected: vm.selectedValue == .contrast)
+        
+        nextButton.isEnabled = vm.isNextEnabled
+        nextButton.alpha = vm.isNextEnabled ? 1.0 : 0.6
     }
 }

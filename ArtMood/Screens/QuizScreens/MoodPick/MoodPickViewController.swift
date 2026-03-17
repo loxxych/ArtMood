@@ -111,7 +111,7 @@ final class MoodPickViewController: UIViewController {
     var onBackTapped: (() -> ())?
     
     // Other
-    private var mood: Mood?
+    private let vm = MoodPickViewModel()
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -125,8 +125,10 @@ final class MoodPickViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindViewModel()
+        render()
         configureUI()
-        updateSelectionUI()
     }
     
     // MARK: - UI configuration
@@ -214,7 +216,7 @@ final class MoodPickViewController: UIViewController {
     private func configureTitleLabel() {
         view.addSubview(titleLabel)
         
-        titleLabel.attributedText = makeTitleText()
+        titleLabel.attributedText = vm.getTitleText()
         titleLabel.numberOfLines = Const.titleNumOfLines
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -390,80 +392,17 @@ final class MoodPickViewController: UIViewController {
         ])
     }
     
-    // MARK: - Utility
-    private func makeTitleText() -> NSAttributedString {
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            string: "What is your\n",
-            attributes: [
-                .font: Const.titleFont,
-                .foregroundColor: UIColor.black,
-            ]
-        )
-        
-        attributedText.append(
-            NSAttributedString(
-                string: "mood",
-                attributes: [
-                    .font: Const.titleBoldFont,
-                    .foregroundColor: UIColor.black
-                ]
-            )
-        )
-        
-        attributedText.append(
-            NSAttributedString(
-                string: "\ntoday?",
-                attributes: [
-                    .font: Const.titleFont,
-                    .foregroundColor: UIColor.black
-                ]
-            )
-        )
-        
-        return attributedText
-    }
-    
-    private func updateSelectionUI() {
-        sadButton.layer.borderColor = UIColor.clear.cgColor
-        happyButton.layer.borderColor = UIColor.clear.cgColor
-        neutralButton.layer.borderColor = UIColor.clear.cgColor
-        
-        sadButton.backgroundColor = .white
-        happyButton.backgroundColor = .white
-        neutralButton.backgroundColor = .white
-        
-        switch mood {
-        case .sad:
-            sadButton.layer.borderColor = Const.buttonBorderColor.cgColor
-            sadButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
-        case .happy:
-            happyButton.layer.borderColor = Const.buttonBorderColor.cgColor
-            happyButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
-        case .neutral:
-            neutralButton.layer.borderColor = Const.buttonBorderColor.cgColor
-            neutralButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
-        case .none:
-            break
-        }
-        
-        nextButton.isEnabled = mood != nil
-        nextButton.alpha = mood == nil ? 0.6 : 1.0
-    }
-    
     // MARK: - Selection logic
     private func selectHappy() {
-        mood = .happy
-        updateSelectionUI()
+        vm.select(.happy)
     }
-    
+
     private func selectSad() {
-        mood = .sad
-        updateSelectionUI()
+        vm.select(.sad)
     }
-    
+
     private func selectNeutral() {
-        mood = .neutral
-        updateSelectionUI()
+        vm.select(.neutral)
     }
     
     // MARK: - Actions
@@ -484,7 +423,7 @@ final class MoodPickViewController: UIViewController {
     
     @objc
     private func nextButtonTapped() {
-        guard let mood else { return }
+        guard let mood = vm.selectedValue else { return }
         onMoodSelected?(mood)
     }
     
@@ -502,10 +441,7 @@ final class MoodPickViewController: UIViewController {
         
         titleLabel.alpha = 0
         titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
-        
-//        outlineMoodLabel.alpha = 1
-//        outlineMoodLabel.transform = CGAffineTransform(scaleX: 1.08, y: 1.08)
-        
+   
         sadButton.alpha = 0
         happyButton.alpha = 0
         neutralButton.alpha = 0
@@ -527,11 +463,6 @@ final class MoodPickViewController: UIViewController {
             self.titleLabel.transform = .identity
         }
         
-//        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
-//            //self.outlineMoodLabel.alpha = 0
-//            //self.outlineMoodLabel.transform = CGAffineTransform(scaleX: 1.16, y: 1.16)
-//        }
-        
         UIView.animate(withDuration: 0.35, delay: 0.45, options: [.curveEaseOut]) {
             self.sadButton.alpha = 1
             self.happyButton.alpha = 1
@@ -542,5 +473,39 @@ final class MoodPickViewController: UIViewController {
             self.nextButton.alpha = 1
             self.nextButton.transform = .identity
         }
+    }
+    
+    // MARK: - Configuration and render
+    private func bindViewModel() {
+        vm.onStateChanged = { [weak self] in
+            self?.render()
+        }
+    }
+    
+    private func render() {
+        sadButton.layer.borderColor = UIColor.clear.cgColor
+        happyButton.layer.borderColor = UIColor.clear.cgColor
+        neutralButton.layer.borderColor = UIColor.clear.cgColor
+        
+        sadButton.backgroundColor = .white
+        happyButton.backgroundColor = .white
+        neutralButton.backgroundColor = .white
+        
+        switch vm.selectedValue {
+        case .sad:
+            sadButton.layer.borderColor = Const.buttonBorderColor.cgColor
+            sadButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
+        case .happy:
+            happyButton.layer.borderColor = Const.buttonBorderColor.cgColor
+            happyButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
+        case .neutral:
+            neutralButton.layer.borderColor = Const.buttonBorderColor.cgColor
+            neutralButton.backgroundColor = Const.selectedButtonColor.withAlphaComponent(0.12)
+        case .none:
+            break
+        }
+        
+        nextButton.isEnabled = vm.isNextEnabled
+        nextButton.alpha = vm.isNextEnabled ? 1.0 : 0.6
     }
 }

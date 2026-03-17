@@ -30,11 +30,8 @@ final class ArtworkDetailsViewController: UIViewController {
         static let tintColor: UIColor = .black
         
         // Images
-        static let arrowAssetName: String = "arrowLeft"
-        static let arrowImage: UIImage = UIImage(named: arrowAssetName) ?? UIImage()
-        
-        static let topDecorAssetName: String = "Logo"
-        static let topDecorImage: UIImage = UIImage(named: topDecorAssetName) ?? UIImage()
+        static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
+        static let topDecorImage: UIImage = UIImage(named: "Logo") ?? UIImage()
     }
     
     // MARK: - Fields
@@ -50,8 +47,7 @@ final class ArtworkDetailsViewController: UIViewController {
     var onFavouriteTapped: ((Artwork) -> ())?
     
     // Other
-    private let artwork: Artwork
-    private let favouritesStore: FavouritesStore = FavouritesStore.shared
+    private let vm: ArtworkDetailsViewModel
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -60,7 +56,7 @@ final class ArtworkDetailsViewController: UIViewController {
     }
     
     init(artwork: Artwork) {
-        self.artwork = artwork
+        vm = ArtworkDetailsViewModel(artwork: artwork)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -124,25 +120,23 @@ final class ArtworkDetailsViewController: UIViewController {
     }
     
     private func configureContent() {
-        let isFavourite: Bool = favouritesStore.isFavourite(id: artwork.id)
-        detailsCardView.configure(with: artwork, isFavourite: isFavourite)
+        detailsCardView.configure(with: vm.artwork, isFavourite: vm.isFavourite)
     }
     
     private func configureActions() {
         detailsCardView.onFavouriteTapped = { [weak self] in
             guard let self else { return }
             
-            self.favouritesStore.toggleFavourite(id: self.artwork.id)
+            vm.toggleFavourite()
             
-            let isFavourite: Bool = self.favouritesStore.isFavourite(id: self.artwork.id)
-            self.detailsCardView.setFavourite(isFavourite)
+            detailsCardView.setFavourite(vm.isFavourite)
             
-            self.onFavouriteTapped?(self.artwork)
+            onFavouriteTapped?(vm.artwork)
         }
         
         detailsCardView.onImageTapped = { [weak self] in
             guard let self else { return }
-            self.openFullScreenArtwork()
+            openFullScreenArtwork()
         }
     }
     
@@ -154,7 +148,7 @@ final class ArtworkDetailsViewController: UIViewController {
     
     // MARK: - Display logic
     private func openFullScreenArtwork() {
-        let viewController = FullScreenArtworkViewController(artwork: artwork)
+        let viewController = FullScreenArtworkViewController(artwork: vm.artwork)
         viewController.modalPresentationStyle = .fullScreen
         present(viewController, animated: true)
     }

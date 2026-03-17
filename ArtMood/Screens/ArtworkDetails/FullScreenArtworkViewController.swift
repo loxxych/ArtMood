@@ -29,10 +29,16 @@ final class FullScreenArtworkViewController: UIViewController {
     }
     
     // MARK: - Fields
+    // Buttons
     private let closeButton: UIButton = UIButton(type: .system)
+    
+    // Scroll views
     private let scrollView: UIScrollView = UIScrollView()
+    
+    // Images
     private let artworkImageView: UIImageView = UIImageView()
     
+    // Other
     private let artwork: Artwork
     
     // MARK: - Lifecycle

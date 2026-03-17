@@ -22,10 +22,6 @@ final class FavouritesViewController: UIViewController {
         static let logoLeft: CGFloat = 25
         static let logoTop: CGFloat = 5
         
-        static let titleTop: CGFloat = 18
-        static let titleLeft: CGFloat = 24
-        static let titleRight: CGFloat = 24
-        
         static let collectionTop: CGFloat = 24
         static let collectionLeft: CGFloat = 16
         static let collectionRight: CGFloat = 16
@@ -36,27 +32,31 @@ final class FavouritesViewController: UIViewController {
         static let bgColor: UIColor = .white
         static let tintColor: UIColor = .black
         
-        static let titleFont: UIFont = UIFont(name: "InstrumentSans-Regular", size: 42)
-            ?? .systemFont(ofSize: 42, weight: .regular)
-        static let titleBoldFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 42)
-            ?? .boldSystemFont(ofSize: 42)
-        
         static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
     }
     
+    // MARK: - Section
+    private enum Section: Int, CaseIterable {
+        case intro
+        case artworks
+    }
+    
     // MARK: - Fields
-    private let titleLabel: UILabel = UILabel()
+    // Labels
+    // Buttons
     private let backButton: UIButton = UIButton(type: .system)
     
+    // Views
     private let headerView: UIView = UIView()
     private let logoView: UIView = LogoView()
     private let collectionView: UICollectionView
     
+    // Closures
     var onBackTapped: (() -> ())?
     var onArtworkTapped: ((Artwork) -> ())?
     
-    private let favouritesStore: FavouritesStore = FavouritesStore.shared
-    private var favouriteArtworks: [Artwork] = []
+    // Other
+    private let vm = FavouritesViewModel()
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -83,25 +83,16 @@ final class FavouritesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureData()
+        
+        vm.loadArtworks()
         collectionView.reloadData()
     }
     
-    // MARK: - Data
-    private func configureData() {
-        let favouriteIDs: [String] = favouritesStore.getFavouriteIDs()
-
-        favouriteArtworks = ArtworkMockData.artworks.filter { artwork in
-            favouriteIDs.contains(artwork.id)
-        }
-    }
-    
-    // MARK: - UI
+    // MARK: - UI configuration
     private func configureUI() {
         view.backgroundColor = Const.bgColor
         
         configureHeader()
-        configureTitleLabel()
         configureCollectionViewLayout()
     }
     
@@ -151,20 +142,6 @@ final class FavouritesViewController: UIViewController {
         ])
     }
     
-    private func configureTitleLabel() {
-        view.addSubview(titleLabel)
-        
-        titleLabel.attributedText = makeTitleText()
-        titleLabel.numberOfLines = 2
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.titleTop),
-            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.titleLeft),
-            titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.titleRight)
-        ])
-    }
-    
     private func configureCollectionViewLayout() {
         view.addSubview(collectionView)
         
@@ -172,44 +149,28 @@ final class FavouritesViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Const.collectionTop),
+            collectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Const.collectionTop),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Const.collectionLeft),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Const.collectionRight),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
+    // MARK: - Configuration
     private func configureCollectionView() {
         collectionView.register(
             GalleryCollectionViewCell.self,
             forCellWithReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier
         )
         
+        collectionView.register(
+            GalleryIntroCell.self,
+            forCellWithReuseIdentifier: GalleryIntroCell.reuseIdentifier
+        )
+        
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
-    }
-    
-    private func makeTitleText() -> NSAttributedString {
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            string: "The special\n",
-            attributes: [
-                .font: Const.titleFont,
-                .foregroundColor: UIColor.black
-            ]
-        )
-        
-        attributedText.append(
-            NSAttributedString(
-                string: "ones",
-                attributes: [
-                    .font: Const.titleBoldFont,
-                    .foregroundColor: UIColor.black
-                ]
-            )
-        )
-        
-        return attributedText
     }
     
     private func imageHeight(for indexPath: IndexPath) -> CGFloat {
@@ -232,45 +193,92 @@ final class FavouritesViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension FavouritesViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        favouriteArtworks.count
+        guard let section = Section(rawValue: section) else {
+            return 0
+        }
+        
+        switch section {
+        case .intro:
+            return 1
+        case .artworks:
+            return vm.artworks.count
+        }
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell: GalleryCollectionViewCell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier,
-            for: indexPath
-        ) as? GalleryCollectionViewCell else {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        Section.allCases.count
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        
+        guard let section = Section(rawValue: indexPath.section) else {
             return UICollectionViewCell()
         }
         
-        let artwork: Artwork = favouriteArtworks[indexPath.item]
-        cell.configure(with: artwork)
-        cell.setImageHeight(imageHeight(for: indexPath))
-        
-        return cell
+        switch section {
+        case .intro:
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: GalleryIntroCell.reuseIdentifier,
+                for: indexPath
+            ) as? GalleryIntroCell else {
+                return UICollectionViewCell()
+            }
+            
+            cell.configure(with: vm.introItem)
+            return cell
+            
+        case .artworks:
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: GalleryCollectionViewCell.reuseIdentifier,
+                for: indexPath
+            ) as? GalleryCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            
+            let artwork = vm.artworks[indexPath.item]
+            cell.configure(with: artwork)
+            cell.setImageHeight(imageHeight(for: indexPath))
+            
+            return cell
+        }
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
 extension FavouritesViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let totalSpacing: CGFloat = Const.itemSpacing
-        let availableWidth: CGFloat = collectionView.bounds.width - totalSpacing
-        let itemWidth: CGFloat = availableWidth / 2
+        guard let section = Section(rawValue: indexPath.section) else { return .zero}
         
-        let currentImageHeight: CGFloat = imageHeight(for: indexPath)
-        let totalHeight: CGFloat = currentImageHeight + 10 + 10 + 40
-        
-        return CGSize(width: itemWidth, height: totalHeight)
+        switch section {
+        case .intro:
+            return CGSize(width: collectionView.bounds.width, height: 150)
+        case .artworks:
+            let totalSpacing: CGFloat = Const.itemSpacing
+            let availableWidth: CGFloat = collectionView.bounds.width - totalSpacing
+            let itemWidth: CGFloat = availableWidth / 2
+            
+            let currentImageHeight: CGFloat = imageHeight(for: indexPath)
+            let totalHeight: CGFloat = currentImageHeight + 10 + 10 + 40
+            
+            return CGSize(width: itemWidth, height: totalHeight)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let artwork: Artwork = favouriteArtworks[indexPath.item]
+        guard let section = Section(rawValue: indexPath.section),
+              section == .artworks else { return }
+        
+        let artwork = vm.artworks[indexPath.item]
         onArtworkTapped?(artwork)
     }
 }

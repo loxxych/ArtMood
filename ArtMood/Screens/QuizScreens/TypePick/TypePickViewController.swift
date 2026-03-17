@@ -112,7 +112,7 @@ final class TypePickViewController: UIViewController {
     var onBackTapped: (() -> ())?
     
     // Other
-    private var paintingType: PaintingType? = .portrait
+    private let vm: SingleSelectionViewModel = TypePickViewModel()
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -126,9 +126,11 @@ final class TypePickViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
-        updateSelectionUI()
         
+        bindViewModel()
+        render()
+        
+        configureUI()
         prepareAnimationState()
     }
     
@@ -355,17 +357,6 @@ final class TypePickViewController: UIViewController {
         ])
     }
     
-    private func updateSelectionUI() {
-        updateTypeButton(button: portraitButton, isSelected: paintingType == .portrait)
-        updateTypeButton(button: landscapeButton, isSelected: paintingType == .landscape)
-        updateTypeButton(button: stillLifeButton, isSelected: paintingType == .stillLife)
-        
-        updateArtworkImages()
-        
-        nextButton.isEnabled = paintingType != nil
-        nextButton.alpha = paintingType == nil ? 0.6 : 1.0
-    }
-    
     private func updateTypeButton(
         button: UIButton,
         isSelected: Bool
@@ -383,7 +374,7 @@ final class TypePickViewController: UIViewController {
         let topImage: UIImage
         let bottomImage: UIImage
         
-        switch paintingType {
+        switch vm.selectedValue {
         case .portrait:
             topImage = UIImage(named: "typePortrait") ?? UIImage()
             bottomImage = UIImage(named: "typePortraitBottom") ?? UIImage()
@@ -409,18 +400,15 @@ final class TypePickViewController: UIViewController {
     
     // MARK: - Selection logic
     private func selectPortrait() {
-        paintingType = .portrait
-        updateSelectionUI()
+        vm.select(.portrait)
     }
     
     private func selectLandscape() {
-        paintingType = .landscape
-        updateSelectionUI()
+        vm.select(.landscape)
     }
     
     private func selectStillLife() {
-        paintingType = .stillLife
-        updateSelectionUI()
+        vm.select(.stillLife)
     }
     
     // MARK: - Actions
@@ -441,7 +429,7 @@ final class TypePickViewController: UIViewController {
     
     @objc
     private func nextButtonTapped() {
-        guard let paintingType else { return }
+        guard let paintingType = vm.selectedValue else { return }
         onTypeSelected?(paintingType)
     }
     
@@ -505,5 +493,23 @@ final class TypePickViewController: UIViewController {
             self.nextButton.alpha = 1
             self.nextButton.transform = .identity
         }
+    }
+    
+    // MARK: - Configuration and render
+    private func bindViewModel() {
+        vm.onStateChanged = { [weak self] in
+            self?.render()
+        }
+    }
+    
+    private func render() {
+        updateTypeButton(button: portraitButton, isSelected: vm.selectedValue == .portrait)
+        updateTypeButton(button: landscapeButton, isSelected: vm.selectedValue == .landscape)
+        updateTypeButton(button: stillLifeButton, isSelected: vm.selectedValue == .stillLife)
+        
+        updateArtworkImages()
+        
+        nextButton.isEnabled = vm.isNextEnabled
+        nextButton.alpha = vm.isNextEnabled ? 1.0 : 0.6
     }
 }

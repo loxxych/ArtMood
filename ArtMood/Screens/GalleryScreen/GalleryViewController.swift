@@ -76,9 +76,7 @@ final class GalleryViewController: UIViewController {
     var onArtworkTapped: ((Artwork) -> ())?
     
     // Other
-    private let answers: QuizAnswers
-    private let recommendationService: ArtworkRecommendationService = ArtworkRecommendationService()
-    private var artworks: [Artwork] = []
+    private let vm: GalleryViewModel
     
     // MARK: - Lifecycle
     @available(*, unavailable)
@@ -87,7 +85,7 @@ final class GalleryViewController: UIViewController {
     }
     
     init(answers: QuizAnswers) {
-        self.answers = answers
+        vm = GalleryViewModel(answers: answers)
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -103,19 +101,11 @@ final class GalleryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureData()
+        vm.loadArtworks()
         configureUI()
         configureCollectionView()
     }
-    
-    // MARK: - Data configuration
-    private func configureData() {
-        artworks = recommendationService.recommendArtworks(
-            for: answers,
-            from: ArtworkMockData.artworks
-        )
-    }
-    
+
     // MARK: - UI configuration
     private func configureUI() {
         configureBackground()
@@ -216,6 +206,8 @@ final class GalleryViewController: UIViewController {
         ])
     }
     
+
+    // MARK: - Configuration
     private func configureCollectionView() {
         collectionView.register(
             GalleryIntroCell.self,
@@ -274,7 +266,7 @@ extension GalleryViewController: UICollectionViewDataSource {
         case .intro:
             return 1
         case .artworks:
-            return artworks.count
+            return vm.artworks.count
         }
     }
     
@@ -295,6 +287,8 @@ extension GalleryViewController: UICollectionViewDataSource {
                 return UICollectionViewCell()
             }
             
+            cell.configure(with: vm.introItem)
+            
             return cell
             
         case .artworks:
@@ -305,7 +299,7 @@ extension GalleryViewController: UICollectionViewDataSource {
                 return UICollectionViewCell()
             }
             
-            let artwork: Artwork = artworks[indexPath.item]
+            let artwork: Artwork = vm.artworks[indexPath.item]
             cell.configure(with: artwork)
             cell.setImageHeight(imageHeight(for: indexPath.item))
             
@@ -378,7 +372,7 @@ extension GalleryViewController: UICollectionViewDelegateFlowLayout {
         guard let section = Section(rawValue: indexPath.section) else { return }
         guard section == .artworks else { return }
         
-        let artwork: Artwork = artworks[indexPath.item]
+        let artwork: Artwork = vm.artworks[indexPath.item]
         onArtworkTapped?(artwork)
     }
 }
