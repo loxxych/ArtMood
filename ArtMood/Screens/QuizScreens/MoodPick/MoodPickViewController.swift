@@ -46,6 +46,19 @@ final class MoodPickViewController: UIViewController {
         static let moodImageSize: CGFloat = 76
         static let moodButtonCornerRadius: CGFloat = 30
         static let moodButtonBorderWidth: CGFloat = 1
+        static let moodFaceTop: CGFloat = 16
+        static let moodTitleTop: CGFloat = 10
+        static let moodTitleHorizontalInset: CGFloat = 8
+        static let moodTitleBottom: CGFloat = 14
+        static let titleTranslationY: CGFloat = 24
+        static let nextButtonTranslationY: CGFloat = 40
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let decorationAnimationDuration: TimeInterval = 0.35
+        static let titleAnimationDuration: TimeInterval = 0.45
+        static let titleAnimationDelay: TimeInterval = 0.15
+        static let buttonsAnimationDelay: TimeInterval = 0.45
+        static let nextButtonAnimationDelay: TimeInterval = 0.62
         
         static let artworkTop: CGFloat = 10
         static let artworkSize: CGFloat = 120
@@ -367,15 +380,15 @@ final class MoodPickViewController: UIViewController {
             containerView.trailingAnchor.constraint(equalTo: button.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: button.bottomAnchor),
             
-            faceLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
+            faceLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: Const.moodFaceTop),
             faceLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             faceLabel.widthAnchor.constraint(equalToConstant: Const.moodImageSize),
             faceLabel.heightAnchor.constraint(equalToConstant: Const.moodImageSize),
             
-            titleLabel.topAnchor.constraint(equalTo: faceLabel.bottomAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -14)
+            titleLabel.topAnchor.constraint(equalTo: faceLabel.bottomAnchor, constant: Const.moodTitleTop),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Const.moodTitleHorizontalInset),
+            titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Const.moodTitleHorizontalInset),
+            titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -Const.moodTitleBottom)
         ])
     }
     
@@ -434,43 +447,43 @@ final class MoodPickViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        counterLabel.alpha = 0
-        rightTopArtworkImageView.alpha = 0
-        ornamentImageView.alpha = 0
-        greenStarImageView.alpha = 0
+        counterLabel.alpha = Const.hiddenAlpha
+        rightTopArtworkImageView.alpha = Const.hiddenAlpha
+        ornamentImageView.alpha = Const.hiddenAlpha
+        greenStarImageView.alpha = Const.hiddenAlpha
         
-        titleLabel.alpha = 0
-        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        titleLabel.alpha = Const.hiddenAlpha
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: Const.titleTranslationY)
    
-        sadButton.alpha = 0
-        happyButton.alpha = 0
-        neutralButton.alpha = 0
+        sadButton.alpha = Const.hiddenAlpha
+        happyButton.alpha = Const.hiddenAlpha
+        neutralButton.alpha = Const.hiddenAlpha
         
-        nextButton.alpha = 0
-        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+        nextButton.alpha = Const.hiddenAlpha
+        nextButton.transform = CGAffineTransform(translationX: 0, y: Const.nextButtonTranslationY)
     }
     
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.35) {
-            self.counterLabel.alpha = 1
-            self.rightTopArtworkImageView.alpha = 1
-            self.ornamentImageView.alpha = 1
-            self.greenStarImageView.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration) {
+            self.counterLabel.alpha = Const.visibleAlpha
+            self.rightTopArtworkImageView.alpha = Const.visibleAlpha
+            self.ornamentImageView.alpha = Const.visibleAlpha
+            self.greenStarImageView.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
-            self.titleLabel.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.titleAnimationDelay, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = Const.visibleAlpha
             self.titleLabel.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.35, delay: 0.45, options: [.curveEaseOut]) {
-            self.sadButton.alpha = 1
-            self.happyButton.alpha = 1
-            self.neutralButton.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration, delay: Const.buttonsAnimationDelay, options: [.curveEaseOut]) {
+            self.sadButton.alpha = Const.visibleAlpha
+            self.happyButton.alpha = Const.visibleAlpha
+            self.neutralButton.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.35, delay: 0.62, options: [.curveEaseOut]) {
-            self.nextButton.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration, delay: Const.nextButtonAnimationDelay, options: [.curveEaseOut]) {
+            self.nextButton.alpha = Const.visibleAlpha
             self.nextButton.transform = .identity
         }
     }

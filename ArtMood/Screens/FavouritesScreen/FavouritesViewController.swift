@@ -28,6 +28,26 @@ final class FavouritesViewController: UIViewController {
         
         static let itemSpacing: CGFloat = 14
         static let lineSpacing: CGFloat = 14
+        static let introCellHeight: CGFloat = 150
+        static let imageHeightModulo: Int = 4
+        static let firstImageHeight: CGFloat = 165
+        static let secondImageHeight: CGFloat = 235
+        static let thirdImageHeight: CGFloat = 170
+        static let fourthImageHeight: CGFloat = 180
+        static let titleSpacing: CGFloat = 10
+        static let bottomSpacing: CGFloat = 10
+        static let titleAreaHeight: CGFloat = 40
+        static let headerTranslationY: CGFloat = -12
+        static let collectionTranslationX: CGFloat = 24
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let headerAnimationDuration: TimeInterval = 0.35
+        
+        static let collectionAnimationDuration: TimeInterval = 0.45
+        static let collectionAnimationDelay: TimeInterval = 0.2
+        static let cellTranslationY: CGFloat = 16
+        static let cellAnimationDuration: TimeInterval = 0.3
+        static let cellAnimationDelayStep: TimeInterval = 0.03
         
         static let bgColor: UIColor = .white
         static let tintColor: UIColor = .black
@@ -184,15 +204,15 @@ final class FavouritesViewController: UIViewController {
     }
     
     private func imageHeight(for indexPath: IndexPath) -> CGFloat {
-        switch indexPath.item % 4 {
+        switch indexPath.item % Const.imageHeightModulo {
         case 0:
-            return 165
+            return Const.firstImageHeight
         case 1:
-            return 235
+            return Const.secondImageHeight
         case 2:
-            return 170
+            return Const.thirdImageHeight
         default:
-            return 180
+            return Const.fourthImageHeight
         }
     }
     
@@ -204,21 +224,21 @@ final class FavouritesViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        headerView.alpha = 0
-        collectionView.alpha = 0
+        headerView.alpha = Const.hiddenAlpha
+        collectionView.alpha = Const.hiddenAlpha
         
-        headerView.transform = CGAffineTransform(translationX: 0, y: -12)
-        collectionView.transform = CGAffineTransform(translationX: 24, y: 0)
+        headerView.transform = CGAffineTransform(translationX: 0, y: Const.headerTranslationY)
+        collectionView.transform = CGAffineTransform(translationX: Const.collectionTranslationX, y: 0)
     }
 
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseOut]) {
-            self.headerView.alpha = 1
+        UIView.animate(withDuration: Const.headerAnimationDuration, delay: 0, options: [.curveEaseOut]) {
+            self.headerView.alpha = Const.visibleAlpha
             self.headerView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.2, options: [.curveEaseOut]) {
-            self.collectionView.alpha = 1
+        UIView.animate(withDuration: Const.collectionAnimationDuration, delay: Const.collectionAnimationDelay, options: [.curveEaseOut]) {
+            self.collectionView.alpha = Const.visibleAlpha
             self.collectionView.transform = .identity
         }
     }
@@ -297,14 +317,14 @@ extension FavouritesViewController: UICollectionViewDelegateFlowLayout {
         
         switch section {
         case .intro:
-            return CGSize(width: collectionView.bounds.width, height: 150)
+            return CGSize(width: collectionView.bounds.width, height: Const.introCellHeight)
         case .artworks:
             let totalSpacing: CGFloat = Const.itemSpacing
             let availableWidth: CGFloat = collectionView.bounds.width - totalSpacing
             let itemWidth: CGFloat = availableWidth / 2
             
             let currentImageHeight: CGFloat = imageHeight(for: indexPath)
-            let totalHeight: CGFloat = currentImageHeight + 10 + 10 + 40
+            let totalHeight: CGFloat = currentImageHeight + Const.titleSpacing + Const.bottomSpacing + Const.titleAreaHeight
             
             return CGSize(width: itemWidth, height: totalHeight)
         }
@@ -326,11 +346,11 @@ extension FavouritesViewController: UICollectionViewDelegateFlowLayout {
         guard hasAnimated else { return }
         
         if cell.alpha == 1, cell.transform == .identity {
-            cell.alpha = 0
-            cell.transform = CGAffineTransform(translationX: 0, y: 16)
+            cell.alpha = Const.hiddenAlpha
+            cell.transform = CGAffineTransform(translationX: 0, y: Const.cellTranslationY)
             
-            UIView.animate(withDuration: 0.3, delay: 0.03 * Double(indexPath.item), options: [.curveEaseOut]) {
-                cell.alpha = 1
+            UIView.animate(withDuration: Const.cellAnimationDuration, delay: Const.cellAnimationDelayStep * Double(indexPath.item), options: [.curveEaseOut]) {
+                cell.alpha = Const.visibleAlpha
                 cell.transform = .identity
             }
         }

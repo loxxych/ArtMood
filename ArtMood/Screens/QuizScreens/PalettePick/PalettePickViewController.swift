@@ -72,6 +72,19 @@ final class PalettePickViewController: UIViewController {
         
         static let optionCornerRadius: CGFloat = 78
         static let optionBorderWidth: CGFloat = 1
+        static let titleTranslationY: CGFloat = 24
+        static let rowTranslationX: CGFloat = 60
+        static let nextButtonTranslationY: CGFloat = 40
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let decorationAnimationDuration: TimeInterval = 0.35
+        static let titleAnimationDuration: TimeInterval = 0.45
+        static let titleAnimationDelay: TimeInterval = 0.12
+        static let firstRowAnimationDelay: TimeInterval = 0.3
+        static let secondRowAnimationDelay: TimeInterval = 0.42
+        static let thirdRowAnimationDelay: TimeInterval = 0.54
+        static let nextButtonAnimationDuration: TimeInterval = 0.4
+        static let nextButtonAnimationDelay: TimeInterval = 0.72
         
         // Fonts
         static let counterFont: UIFont = UIFont(name: "InstrumentSans-Bold", size: 22)
@@ -473,62 +486,62 @@ final class PalettePickViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        backButton.alpha = 0
-        counterLabel.alpha = 0
-        titleLabel.alpha = 0
+        backButton.alpha = Const.hiddenAlpha
+        counterLabel.alpha = Const.hiddenAlpha
+        titleLabel.alpha = Const.hiddenAlpha
         
-        dotsImageView.alpha = 0
-        leftSpiralImageView.alpha = 0
-        bottomSpiralImageView.alpha = 0
-        blackStarImageView.alpha = 0
+        dotsImageView.alpha = Const.hiddenAlpha
+        leftSpiralImageView.alpha = Const.hiddenAlpha
+        bottomSpiralImageView.alpha = Const.hiddenAlpha
+        blackStarImageView.alpha = Const.hiddenAlpha
         
-        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: Const.titleTranslationY)
         
-        firstRowView.alpha = 0
-        firstRowView.transform = CGAffineTransform(translationX: 60, y: 0)
+        firstRowView.alpha = Const.hiddenAlpha
+        firstRowView.transform = CGAffineTransform(translationX: Const.rowTranslationX, y: 0)
         
-        secondRowView.alpha = 0
-        secondRowView.transform = CGAffineTransform(translationX: -60, y: 0)
+        secondRowView.alpha = Const.hiddenAlpha
+        secondRowView.transform = CGAffineTransform(translationX: -Const.rowTranslationX, y: 0)
         
-        thirdRowView.alpha = 0
-        thirdRowView.transform = CGAffineTransform(translationX: 60, y: 0)
+        thirdRowView.alpha = Const.hiddenAlpha
+        thirdRowView.transform = CGAffineTransform(translationX: Const.rowTranslationX, y: 0)
         
-        nextButton.alpha = 0
-        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+        nextButton.alpha = Const.hiddenAlpha
+        nextButton.transform = CGAffineTransform(translationX: 0, y: Const.nextButtonTranslationY)
     }
     
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.35) {
-            self.backButton.alpha = 1
-            self.counterLabel.alpha = 1
-            self.dotsImageView.alpha = 1
-            self.leftSpiralImageView.alpha = 1
-            self.bottomSpiralImageView.alpha = 1
-            self.blackStarImageView.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration) {
+            self.backButton.alpha = Const.visibleAlpha
+            self.counterLabel.alpha = Const.visibleAlpha
+            self.dotsImageView.alpha = Const.visibleAlpha
+            self.leftSpiralImageView.alpha = Const.visibleAlpha
+            self.bottomSpiralImageView.alpha = Const.visibleAlpha
+            self.blackStarImageView.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.12, options: [.curveEaseOut]) {
-            self.titleLabel.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.titleAnimationDelay, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = Const.visibleAlpha
             self.titleLabel.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.3, options: [.curveEaseOut]) {
-            self.firstRowView.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.firstRowAnimationDelay, options: [.curveEaseOut]) {
+            self.firstRowView.alpha = Const.visibleAlpha
             self.firstRowView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.42, options: [.curveEaseOut]) {
-            self.secondRowView.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.secondRowAnimationDelay, options: [.curveEaseOut]) {
+            self.secondRowView.alpha = Const.visibleAlpha
             self.secondRowView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.54, options: [.curveEaseOut]) {
-            self.thirdRowView.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.thirdRowAnimationDelay, options: [.curveEaseOut]) {
+            self.thirdRowView.alpha = Const.visibleAlpha
             self.thirdRowView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.4, delay: 0.72, options: [.curveEaseOut]) {
-            self.nextButton.alpha = 1
+        UIView.animate(withDuration: Const.nextButtonAnimationDuration, delay: Const.nextButtonAnimationDelay, options: [.curveEaseOut]) {
+            self.nextButton.alpha = Const.visibleAlpha
             self.nextButton.transform = .identity
         }
     }

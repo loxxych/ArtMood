@@ -58,6 +58,22 @@ final class TypePickViewController: UIViewController {
         static let leftOrnamentBottom: CGFloat = 62
         static let leftOrnamentSize: CGFloat = 120
         
+        static let titleTranslationY: CGFloat = 24
+        static let buttonTranslationY: CGFloat = 20
+        static let nextButtonTranslationY: CGFloat = 40
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let decorationAnimationDuration: TimeInterval = 0.35
+        
+        // Animations
+        static let titleAnimationDuration: TimeInterval = 0.45
+        static let titleAnimationDelay: TimeInterval = 0.15
+        static let portraitAnimationDelay: TimeInterval = 0.42
+        static let landscapeAnimationDelay: TimeInterval = 0.54
+        static let stillLifeAnimationDelay: TimeInterval = 0.66
+        static let nextButtonAnimationDuration: TimeInterval = 0.4
+        static let nextButtonAnimationDelay: TimeInterval = 0.82
+        
         // Numbers
         static let titleNumOfLines: Int = 4
         
@@ -80,8 +96,12 @@ final class TypePickViewController: UIViewController {
         
         // Images
         static let arrowImage: UIImage = UIImage(named: "arrowLeft") ?? UIImage()
-        static let topArtworkImage: UIImage = UIImage(named: "typePortrait") ?? UIImage()
-        static let bottomArtworkImage: UIImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+        static let portraitTopArtworkImage: UIImage = UIImage(named: "typePortrait") ?? UIImage()
+        static let portraitBottomArtworkImage: UIImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+        static let landscapeTopArtworkImage: UIImage = UIImage(named: "typeLandscape") ?? UIImage()
+        static let landscapeBottomArtworkImage: UIImage = UIImage(named: "typeLandscapeBottom") ?? UIImage()
+        static let stillLifeTopArtworkImage: UIImage = UIImage(named: "typeStillLife") ?? UIImage()
+        static let stillLifeBottomArtworkImage: UIImage = UIImage(named: "typeStillLifeBottom") ?? UIImage()
         static let greenStarImage: UIImage = UIImage(named: "greenStar") ?? UIImage()
         static let leftOrnamentImage: UIImage = UIImage(named: "flower") ?? UIImage()
     }
@@ -233,13 +253,13 @@ final class TypePickViewController: UIViewController {
         view.addSubview(topArtworkImageView)
         view.addSubview(bottomArtworkImageView)
         
-        topArtworkImageView.image = Const.topArtworkImage
+        topArtworkImageView.image = Const.portraitTopArtworkImage
         topArtworkImageView.contentMode = .scaleAspectFill
         topArtworkImageView.clipsToBounds = true
         topArtworkImageView.layer.cornerRadius = Const.topImageSize / 2
         topArtworkImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        bottomArtworkImageView.image = Const.bottomArtworkImage
+        bottomArtworkImageView.image = Const.portraitBottomArtworkImage
         bottomArtworkImageView.contentMode = .scaleAspectFill
         bottomArtworkImageView.clipsToBounds = true
         bottomArtworkImageView.layer.cornerRadius = Const.bottomImageCornerRadius
@@ -376,17 +396,17 @@ final class TypePickViewController: UIViewController {
         
         switch vm.selectedValue {
         case .portrait:
-            topImage = UIImage(named: "typePortrait") ?? UIImage()
-            bottomImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+            topImage = Const.portraitTopArtworkImage
+            bottomImage = Const.portraitBottomArtworkImage
         case .landscape:
-            topImage = UIImage(named: "typeLandscape") ?? UIImage()
-            bottomImage = UIImage(named: "typeLandscapeBottom") ?? UIImage()
+            topImage = Const.landscapeTopArtworkImage
+            bottomImage = Const.landscapeBottomArtworkImage
         case .stillLife:
-            topImage = UIImage(named: "typeStillLife") ?? UIImage()
-            bottomImage = UIImage(named: "typeStillLifeBottom") ?? UIImage()
+            topImage = Const.stillLifeTopArtworkImage
+            bottomImage = Const.stillLifeBottomArtworkImage
         case .none:
-            topImage = UIImage(named: "typePortrait") ?? UIImage()
-            bottomImage = UIImage(named: "typePortraitBottom") ?? UIImage()
+            topImage = Const.portraitTopArtworkImage
+            bottomImage = Const.portraitBottomArtworkImage
         }
         
         UIView.transition(with: topArtworkImageView, duration: 0.3, options: .transitionCrossDissolve) {
@@ -440,57 +460,57 @@ final class TypePickViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        backButton.alpha = 0
-        counterLabel.alpha = 0
-        greenStarImageView.alpha = 0
-        leftOrnamentImageView.alpha = 0
+        backButton.alpha = Const.hiddenAlpha
+        counterLabel.alpha = Const.hiddenAlpha
+        greenStarImageView.alpha = Const.hiddenAlpha
+        leftOrnamentImageView.alpha = Const.hiddenAlpha
         
-        titleLabel.alpha = 0
-        titleLabel.transform = CGAffineTransform(translationX: 0, y: 24)
+        titleLabel.alpha = Const.hiddenAlpha
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: Const.titleTranslationY)
         
-        portraitButton.alpha = 0
-        portraitButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        portraitButton.alpha = Const.hiddenAlpha
+        portraitButton.transform = CGAffineTransform(translationX: 0, y: Const.buttonTranslationY)
         
-        landscapeButton.alpha = 0
-        landscapeButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        landscapeButton.alpha = Const.hiddenAlpha
+        landscapeButton.transform = CGAffineTransform(translationX: 0, y: Const.buttonTranslationY)
         
-        stillLifeButton.alpha = 0
-        stillLifeButton.transform = CGAffineTransform(translationX: 0, y: 20)
+        stillLifeButton.alpha = Const.hiddenAlpha
+        stillLifeButton.transform = CGAffineTransform(translationX: 0, y: Const.buttonTranslationY)
         
-        nextButton.alpha = 0
-        nextButton.transform = CGAffineTransform(translationX: 0, y: 40)
+        nextButton.alpha = Const.hiddenAlpha
+        nextButton.transform = CGAffineTransform(translationX: 0, y: Const.nextButtonTranslationY)
     }
 
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.35) {
-            self.backButton.alpha = 1
-            self.counterLabel.alpha = 1
-            self.greenStarImageView.alpha = 1
-            self.leftOrnamentImageView.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration) {
+            self.backButton.alpha = Const.visibleAlpha
+            self.counterLabel.alpha = Const.visibleAlpha
+            self.greenStarImageView.alpha = Const.visibleAlpha
+            self.leftOrnamentImageView.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.15, options: [.curveEaseOut]) {
-            self.titleLabel.alpha = 1
+        UIView.animate(withDuration: Const.titleAnimationDuration, delay: Const.titleAnimationDelay, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = Const.visibleAlpha
             self.titleLabel.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.35, delay: 0.42, options: [.curveEaseOut]) {
-            self.portraitButton.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration, delay: Const.portraitAnimationDelay, options: [.curveEaseOut]) {
+            self.portraitButton.alpha = Const.visibleAlpha
             self.portraitButton.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.35, delay: 0.54, options: [.curveEaseOut]) {
-            self.landscapeButton.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration, delay: Const.landscapeAnimationDelay, options: [.curveEaseOut]) {
+            self.landscapeButton.alpha = Const.visibleAlpha
             self.landscapeButton.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.35, delay: 0.66, options: [.curveEaseOut]) {
-            self.stillLifeButton.alpha = 1
+        UIView.animate(withDuration: Const.decorationAnimationDuration, delay: Const.stillLifeAnimationDelay, options: [.curveEaseOut]) {
+            self.stillLifeButton.alpha = Const.visibleAlpha
             self.stillLifeButton.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.4, delay: 0.82, options: [.curveEaseOut]) {
-            self.nextButton.alpha = 1
+        UIView.animate(withDuration: Const.nextButtonAnimationDuration, delay: Const.nextButtonAnimationDelay, options: [.curveEaseOut]) {
+            self.nextButton.alpha = Const.visibleAlpha
             self.nextButton.transform = .identity
         }
     }

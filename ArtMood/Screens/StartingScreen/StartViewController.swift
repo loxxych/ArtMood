@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StartViewController: UIViewController {
+final class StartViewController: UIViewController {
     // MARK: - Constants
     private enum Const {
         // Strings
@@ -42,6 +42,22 @@ class StartViewController: UIViewController {
         static let ornamentHeight: CGFloat = 120
         static let ornamentCenterX: CGFloat = 30
         static let ornamentBottom: CGFloat = 0
+        
+        // Animations
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let rightDotsTranslationX: CGFloat = 80
+        static let hypnosisTranslationY: CGFloat = 50
+        static let artworkTranslationY: CGFloat = 80
+        static let buttonTranslationY: CGFloat = 60
+        static let logoInitialScale: CGFloat = 0.92
+        static let textTranslationY: CGFloat = 12
+        static let primaryAnimationDuration: TimeInterval = 0.5
+        static let titleAnimationDelay: TimeInterval = 0.15
+        static let descriptionAnimationDelay: TimeInterval = 0.28
+        static let decorationsAnimationDuration: TimeInterval = 0.55
+        static let decorationsAnimationDelay: TimeInterval = 0.4
+        static let hypnosisRotationDuration: CFTimeInterval = 4
                 
         // Numbers
         static let descNumOfLines = 2
@@ -152,7 +168,7 @@ class StartViewController: UIViewController {
             hypnosisImageView.widthAnchor.constraint(equalToConstant: Const.hypnosisSize),
             hypnosisImageView.heightAnchor.constraint(equalToConstant: Const.hypnosisSize),
             hypnosisImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hypnosisImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150),
+            hypnosisImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Const.hypnosisBottom),
             
             bottomLeftArtworkImageView.widthAnchor.constraint(equalToConstant: Const.leftArtworkWidth),
             bottomLeftArtworkImageView.heightAnchor.constraint(equalToConstant: Const.leftArtworkHeight),
@@ -260,78 +276,78 @@ class StartViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        logoImageView.alpha = 0
-        titleLabel.alpha = 0
-        descriptionLabel.alpha = 0
+        logoImageView.alpha = Const.hiddenAlpha
+        titleLabel.alpha = Const.hiddenAlpha
+        descriptionLabel.alpha = Const.hiddenAlpha
         
-        rightDotsImageView.alpha = 0
-        hypnosisImageView.alpha = 0
-        bottomLeftArtworkImageView.alpha = 0
-        bottomRightArtworkImageView.alpha = 0
-        bottomOrnamentImageView.alpha = 0
-        startButton.alpha = 0
-        favouritesButton.alpha = 0
+        rightDotsImageView.alpha = Const.hiddenAlpha
+        hypnosisImageView.alpha = Const.hiddenAlpha
+        bottomLeftArtworkImageView.alpha = Const.hiddenAlpha
+        bottomRightArtworkImageView.alpha = Const.hiddenAlpha
+        bottomOrnamentImageView.alpha = Const.hiddenAlpha
+        startButton.alpha = Const.hiddenAlpha
+        favouritesButton.alpha = Const.hiddenAlpha
         
-        rightDotsImageView.transform = CGAffineTransform(translationX: 80, y: 0)
-        hypnosisImageView.transform = CGAffineTransform(translationX: 0, y: 50)
-        bottomLeftArtworkImageView.transform = CGAffineTransform(translationX: 0, y: 80)
-        bottomRightArtworkImageView.transform = CGAffineTransform(translationX: 0, y: 80)
-        bottomOrnamentImageView.transform = CGAffineTransform(translationX: 0, y: 80)
-        startButton.transform = CGAffineTransform(translationX: 0, y: 60)
-        favouritesButton.transform = CGAffineTransform(translationX: 0, y: 60)
-        logoImageView.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
-        titleLabel.transform = CGAffineTransform(translationX: 0, y: 12)
-        descriptionLabel.transform = CGAffineTransform(translationX: 0, y: 12)
+        rightDotsImageView.transform = CGAffineTransform(translationX: Const.rightDotsTranslationX, y: 0)
+        hypnosisImageView.transform = CGAffineTransform(translationX: 0, y: Const.hypnosisTranslationY)
+        bottomLeftArtworkImageView.transform = CGAffineTransform(translationX: 0, y: Const.artworkTranslationY)
+        bottomRightArtworkImageView.transform = CGAffineTransform(translationX: 0, y: Const.artworkTranslationY)
+        bottomOrnamentImageView.transform = CGAffineTransform(translationX: 0, y: Const.artworkTranslationY)
+        startButton.transform = CGAffineTransform(translationX: 0, y: Const.buttonTranslationY)
+        favouritesButton.transform = CGAffineTransform(translationX: 0, y: Const.buttonTranslationY)
+        logoImageView.transform = CGAffineTransform(scaleX: Const.logoInitialScale, y: Const.logoInitialScale)
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: Const.textTranslationY)
+        descriptionLabel.transform = CGAffineTransform(translationX: 0, y: Const.textTranslationY)
     }
     
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.5) {
-            self.logoImageView.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration) {
+            self.logoImageView.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.5, delay: 0.15, options: [.curveEaseOut]) {
-            self.titleLabel.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration, delay: Const.titleAnimationDelay, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.5, delay: 0.28, options: [.curveEaseOut]) {
-            self.descriptionLabel.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration, delay: Const.descriptionAnimationDelay, options: [.curveEaseOut]) {
+            self.descriptionLabel.alpha = Const.visibleAlpha
         }
         
-        UIView.animate(withDuration: 0.5) {
-            self.logoImageView.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration) {
+            self.logoImageView.alpha = Const.visibleAlpha
             self.logoImageView.transform = .identity
         }
 
-        UIView.animate(withDuration: 0.5, delay: 0.15, options: [.curveEaseOut]) {
-            self.titleLabel.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration, delay: Const.titleAnimationDelay, options: [.curveEaseOut]) {
+            self.titleLabel.alpha = Const.visibleAlpha
             self.titleLabel.transform = .identity
         }
 
-        UIView.animate(withDuration: 0.5, delay: 0.28, options: [.curveEaseOut]) {
-            self.descriptionLabel.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration, delay: Const.descriptionAnimationDelay, options: [.curveEaseOut]) {
+            self.descriptionLabel.alpha = Const.visibleAlpha
             self.descriptionLabel.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.55, delay: 0.4, options: [.curveEaseOut]) {
-            self.rightDotsImageView.alpha = 1
+        UIView.animate(withDuration: Const.decorationsAnimationDuration, delay: Const.decorationsAnimationDelay, options: [.curveEaseOut]) {
+            self.rightDotsImageView.alpha = Const.visibleAlpha
             self.rightDotsImageView.transform = .identity
             
-            self.hypnosisImageView.alpha = 1
+            self.hypnosisImageView.alpha = Const.visibleAlpha
             self.hypnosisImageView.transform = .identity
             
-            self.bottomLeftArtworkImageView.alpha = 1
+            self.bottomLeftArtworkImageView.alpha = Const.visibleAlpha
             self.bottomLeftArtworkImageView.transform = .identity
             
-            self.bottomRightArtworkImageView.alpha = 1
+            self.bottomRightArtworkImageView.alpha = Const.visibleAlpha
             self.bottomRightArtworkImageView.transform = .identity
             
-            self.bottomOrnamentImageView.alpha = 1
+            self.bottomOrnamentImageView.alpha = Const.visibleAlpha
             self.bottomOrnamentImageView.transform = .identity
             
-            self.startButton.alpha = 1
+            self.startButton.alpha = Const.visibleAlpha
             self.startButton.transform = .identity
             
-            self.favouritesButton.alpha = 1
+            self.favouritesButton.alpha = Const.visibleAlpha
             self.favouritesButton.transform = .identity
 
         } completion: { _ in
@@ -342,10 +358,9 @@ class StartViewController: UIViewController {
     private func startHypnosisRotation() {
         let rotation = CABasicAnimation(keyPath: "transform.rotation.z")
         rotation.toValue = CGFloat.pi * 2
-        rotation.duration = 4
+        rotation.duration = Const.hypnosisRotationDuration
         rotation.isCumulative = true
         rotation.repeatCount = .infinity
         hypnosisImageView.layer.add(rotation, forKey: "rotationAnimation")
     }
 }
-

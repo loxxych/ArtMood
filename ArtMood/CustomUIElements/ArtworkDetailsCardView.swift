@@ -25,6 +25,7 @@ final class ArtworkDetailsCardView: UIView {
         
         static let titleTop: CGFloat = 18
         static let titleLeft: CGFloat = 22
+        static let textTrailingSpacing: CGFloat = 12
         
         static let artistTop: CGFloat = 8
         static let artistBottom: CGFloat = 22
@@ -154,7 +155,7 @@ final class ArtworkDetailsCardView: UIView {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: artworkImageView.bottomAnchor, constant: Const.titleTop),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.titleLeft),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: favouriteButton.leadingAnchor, constant: -12)
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: favouriteButton.leadingAnchor, constant: -Const.textTrailingSpacing)
         ])
     }
     
@@ -169,7 +170,7 @@ final class ArtworkDetailsCardView: UIView {
         NSLayoutConstraint.activate([
             artistLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Const.artistTop),
             artistLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.titleLeft),
-            artistLabel.trailingAnchor.constraint(lessThanOrEqualTo: favouriteButton.leadingAnchor, constant: -12),
+            artistLabel.trailingAnchor.constraint(lessThanOrEqualTo: favouriteButton.leadingAnchor, constant: -Const.textTrailingSpacing),
             artistLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Const.artistBottom)
         ])
     }

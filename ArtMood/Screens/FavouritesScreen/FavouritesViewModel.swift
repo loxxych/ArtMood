@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-class FavouritesViewModel {
+final class FavouritesViewModel {
     // MARK: - Constants
     private enum Const {
         // Strings        

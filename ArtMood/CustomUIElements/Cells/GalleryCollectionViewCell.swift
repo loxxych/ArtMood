@@ -22,6 +22,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         static let imageLeft: CGFloat = 10
         static let imageRight: CGFloat = 10
         static let imageHeight: CGFloat = 170
+        static let imageCornerRadius: CGFloat = 24
         
         static let titleTop: CGFloat = 10
         static let titleLeft: CGFloat = 14
@@ -30,6 +31,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
         static let arrowSize: CGFloat = 18
         static let arrowRight: CGFloat = 14
         static let arrowBottom: CGFloat = 12
+        static let arrowTitleSpacing: CGFloat = 8
         
         // Fonts
         static let titleFont: UIFont = UIFont(name: "InstrumentSans-SemiBold", size: 16)
@@ -84,7 +86,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
     private func configureArtworkImageView() {
         contentView.addSubview(artworkImageView)
         
-        artworkImageView.layer.cornerRadius = 24
+        artworkImageView.layer.cornerRadius = Const.imageCornerRadius
         artworkImageView.contentMode = .scaleAspectFill
         artworkImageView.clipsToBounds = true
         
@@ -128,7 +130,7 @@ class GalleryCollectionViewCell: UICollectionViewCell {
             arrowImageView.heightAnchor.constraint(equalToConstant: Const.arrowSize),
             arrowImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Const.arrowRight),
             arrowImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Const.arrowBottom),
-            arrowImageView.leadingAnchor.constraint(greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: 8)
+            arrowImageView.leadingAnchor.constraint(greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: Const.arrowTitleSpacing)
         ])
     }
     

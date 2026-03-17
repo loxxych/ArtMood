@@ -39,6 +39,19 @@ final class ArtworkDetailsViewController: UIViewController {
         static let leftOrnamentSize: CGFloat = 120
         static let leftOrnamentLeft: CGFloat = -20
         static let leftOrnamentBottom: CGFloat = 18
+        static let hiddenAlpha: CGFloat = 0
+        static let visibleAlpha: CGFloat = 1
+        static let backButtonTranslationX: CGFloat = -12
+        static let topDecorInitialScale: CGFloat = 0.9
+        static let rightDecorationTranslationX: CGFloat = 20
+        static let hypnosisTranslationY: CGFloat = 10
+        static let bottomDecorationTranslationY: CGFloat = 20
+        static let detailsCardTranslationY: CGFloat = 32
+        static let primaryAnimationDuration: TimeInterval = 0.3
+        static let secondaryAnimationDuration: TimeInterval = 0.4
+        static let secondaryAnimationDelay: TimeInterval = 0.1
+        static let cardAnimationDuration: TimeInterval = 0.45
+        static let cardAnimationDelay: TimeInterval = 0.2
 
         // Images
         static let rightDotsImage: UIImage = UIImage(named: "dotsCircle") ?? UIImage()
@@ -239,52 +252,52 @@ final class ArtworkDetailsViewController: UIViewController {
     
     // MARK: - Animations
     private func prepareAnimationState() {
-        backButton.alpha = 0
-        topDecorImageView.alpha = 0
+        backButton.alpha = Const.hiddenAlpha
+        topDecorImageView.alpha = Const.hiddenAlpha
         
-        rightDotsImageView.alpha = 0
-        hypnosisImageView.alpha = 0
-        bottomStarImageView.alpha = 0
-        leftOrnamentImageView.alpha = 0
+        rightDotsImageView.alpha = Const.hiddenAlpha
+        hypnosisImageView.alpha = Const.hiddenAlpha
+        bottomStarImageView.alpha = Const.hiddenAlpha
+        leftOrnamentImageView.alpha = Const.hiddenAlpha
         
-        detailsCardView.alpha = 0
+        detailsCardView.alpha = Const.hiddenAlpha
         
-        backButton.transform = CGAffineTransform(translationX: -12, y: 0)
-        topDecorImageView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        backButton.transform = CGAffineTransform(translationX: Const.backButtonTranslationX, y: 0)
+        topDecorImageView.transform = CGAffineTransform(scaleX: Const.topDecorInitialScale, y: Const.topDecorInitialScale)
         
-        rightDotsImageView.transform = CGAffineTransform(translationX: 20, y: 0)
-        hypnosisImageView.transform = CGAffineTransform(translationX: 20, y: 10)
-        bottomStarImageView.transform = CGAffineTransform(translationX: 0, y: 20)
-        leftOrnamentImageView.transform = CGAffineTransform(translationX: -20, y: 20)
+        rightDotsImageView.transform = CGAffineTransform(translationX: Const.rightDecorationTranslationX, y: 0)
+        hypnosisImageView.transform = CGAffineTransform(translationX: Const.rightDecorationTranslationX, y: Const.hypnosisTranslationY)
+        bottomStarImageView.transform = CGAffineTransform(translationX: 0, y: Const.bottomDecorationTranslationY)
+        leftOrnamentImageView.transform = CGAffineTransform(translationX: -Const.rightDecorationTranslationX, y: Const.bottomDecorationTranslationY)
         
-        detailsCardView.transform = CGAffineTransform(translationX: 0, y: 32)
+        detailsCardView.transform = CGAffineTransform(translationX: 0, y: Const.detailsCardTranslationY)
     }
 
     private func runAppearAnimations() {
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
-            self.backButton.alpha = 1
+        UIView.animate(withDuration: Const.primaryAnimationDuration, delay: 0, options: [.curveEaseOut]) {
+            self.backButton.alpha = Const.visibleAlpha
             self.backButton.transform = .identity
             
-            self.topDecorImageView.alpha = 1
+            self.topDecorImageView.alpha = Const.visibleAlpha
             self.topDecorImageView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.4, delay: 0.1, options: [.curveEaseOut]) {
-            self.rightDotsImageView.alpha = 1
+        UIView.animate(withDuration: Const.secondaryAnimationDuration, delay: Const.secondaryAnimationDelay, options: [.curveEaseOut]) {
+            self.rightDotsImageView.alpha = Const.visibleAlpha
             self.rightDotsImageView.transform = .identity
             
-            self.hypnosisImageView.alpha = 1
+            self.hypnosisImageView.alpha = Const.visibleAlpha
             self.hypnosisImageView.transform = .identity
             
-            self.bottomStarImageView.alpha = 1
+            self.bottomStarImageView.alpha = Const.visibleAlpha
             self.bottomStarImageView.transform = .identity
             
-            self.leftOrnamentImageView.alpha = 1
+            self.leftOrnamentImageView.alpha = Const.visibleAlpha
             self.leftOrnamentImageView.transform = .identity
         }
         
-        UIView.animate(withDuration: 0.45, delay: 0.2, options: [.curveEaseOut]) {
-            self.detailsCardView.alpha = 1
+        UIView.animate(withDuration: Const.cardAnimationDuration, delay: Const.cardAnimationDelay, options: [.curveEaseOut]) {
+            self.detailsCardView.alpha = Const.visibleAlpha
             self.detailsCardView.transform = .identity
         }
     }
