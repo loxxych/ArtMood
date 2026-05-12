@@ -4,9 +4,7 @@ ArtMood - iOS-приложение на UIKit, которое подбирает
 
 ## Демо
 
-> Сюда можно добавить GIF с демонстрацией приложения.
-
-![Demo](resources/ArtMoodDemo.gif)
+![Demo](./resources/ArtMoodDemo.gif)
 
 ## Возможности
 
