@@ -4,13 +4,8 @@ ArtMood - iOS-приложение на UIKit, которое подбирает
 
 ## Демо
 
-<video src="https://streamable.com/na991j"
-       width="300"
-       autoplay
-       loop
-       muted
-       playsinline>
-</video>
+<video width="630" height="300" src="https://streamable.com/na991j"></video>
+
 
 ## Возможности
 
